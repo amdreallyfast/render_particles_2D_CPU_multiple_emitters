@@ -2,31 +2,62 @@
 
 //class ParticleUpdater
 
+// TODO: header
 ParticleUpdater::ParticleUpdater() :
-    _regionSphere(0),
-    _regionPolygon(0),
-    _emitterPoint(0),
-    _emitterBar(0)
+    _pRegion(0),
+    _pEmitter(0)
 {
 }
 
-void ParticleUpdater::SetRegion(const ParticleRegionSphere *region)
+// TODO: header
+void ParticleUpdater::SetRegion(const IParticleRegion *pRegion)
 {
+    _pRegion = pRegion;
 }
 
-void ParticleUpdater::SetRegion(const ParticleRegionPolygon *region)
+// TODO: header
+void ParticleUpdater::SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame)
 {
+    _pEmitter = pEmitter;
+    _maxParticlesEmittedPerFrame = maxParticlesEmittedPerFrame;
 }
 
-void ParticleUpdater::SetEmitter(const ParticleEmitterPoint *emitter, const int maxParticlesEmittedPerFrame)
+// TODO: header
+void ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
+    const float deltaTimeSec) const
 {
-}
+    // TODO: ??some kind of std::remove_if(...) algorithm? for each item, if not good, then swap with last item and reduce final index by 1??
 
-void ParticleUpdater::SetEmitter(const ParticleEmitterBar *emitter, const int maxParticlesEmittedPerFrame)
-{
-}
+    // for all particles:
+    // - if it has gone out of bounds, reset it and deactivate it
+    // - if it is inactive and the emitter hasn't used up its quota for emitted particles this frame, reactivate it
+    // - if it is active, update its position with its velocity
+    // Note: If if() statements are used for each situation, then a particle has a chance to go 
+    // out of bounds and get reset, get reactivated, and emit again in the same frame.  If 
+    // else-if() statements are used, then only one of those situations will be run per frame.  
+    // I did the former, but it doesn't really matter which approach is chosen.
 
-void ParticleUpdater::Update(std::vector<Particle> &particleCollection)
-{
+    int emitCounter = 0;
+    for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
+    {
+        Particle &particleRef = particleCollection[particleIndex];
+        if (_pRegion->OutOfBounds(particleRef))
+        {
+            particleRef._isActive = false;
+            _pEmitter->ResetParticle(&(particleCollection[particleIndex]));
+        }
+
+        // if vs else-if()? eh?
+        if (!particleRef._isActive && emitCounter < _maxParticlesEmittedPerFrame)
+        {
+            particleRef._isActive = true;
+        }
+
+        if (particleRef._isActive)
+        {
+            particleRef._position = particleRef._position + 
+                (particleRef._velocity * deltaTimeSec);
+        }
+    }
 }
 

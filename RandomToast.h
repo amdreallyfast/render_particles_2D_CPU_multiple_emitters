@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm/vec3.hpp"
+
 /*-----------------------------------------------------------------------------------------------
 Description:
     Both the "min max velocity" and "particle emiter bar" objects use randomness, so rather than
@@ -20,3 +22,4 @@ Creator:    John Cox (6-25-2016)
 float RandomOnRange0to1();
 unsigned long Random();
 long RandomPosAndNeg();
+glm::vec3 RandomColor();

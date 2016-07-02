@@ -70,7 +70,7 @@ void Init()
 
     gProgramId = GenerateShaderProgram();
 
-    GenerateParticleEmitter(1000);
+    //GenerateParticleEmitter(1000);
 
 
     gUnifMatrixTransform = glGetUniformLocation(gProgramId, "translateMatrixWindowSpace");

@@ -1,58 +1,26 @@
-#include "ParticleRegion.h"
+#include "ParticleRegionPolygon.h"
+
 #include "glm/detail/func_geometric.hpp"    // for dot and normalize
 
-
+// TODO: header
 static glm::vec2 RotatePlus90(const glm::vec2 &v)
 {
     return glm::vec2(-(v.y), v.x);
 }
 
+// TODO: header
 static glm::vec2 RotateNeg90(const glm::vec2 &v)
 {
     return glm::vec2(v.y, -(v.x));
 }
 
-ParticleRegionSphere::ParticleRegionSphere() :
-    // the glm::vec2 initializes itself to 0
-    _radiusSqr(0.0f)
-{
-}
-
-void ParticleRegionSphere::Init(const glm::vec2 &center, const float radius)
-{
-    _center = center;
-    _radiusSqr = radius * radius;
-}
-
-void ParticleRegionSphere::DeactivateIfOutOfBounds(Particle &p)
-{
-    glm::vec2 centerToParticle = p._position - _center;
-    float distSqr = glm::dot(centerToParticle, centerToParticle);
-    if (distSqr > _radiusSqr)
-    {
-        p._isActive = false;
-    }
-}
-
-void ParticleRegionSphere::DeactivateIfOutOfBounds(std::vector<Particle> &particleCollection)
-{
-    for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
-    {
-        glm::vec2 centerToParticle = particleCollection[particleIndex]._position - _center;
-        float distSqr = glm::dot(centerToParticle, centerToParticle);
-        if (distSqr > _radiusSqr)
-        {
-            particleCollection[particleIndex]._isActive = false;
-        }
-    }
-}
-
-
+// TODO: header
 ParticleRegionPolygon::ParticleRegionPolygon()
 {
     // the glm::vec2 objects have initializers to 0, so don't bother initializing them
 }
 
+// TODO: header
 void ParticleRegionPolygon::Init(const bool isClockwise, const glm::vec2 &corner1, const glm::vec2 &corner2,
     const glm::vec2 &corner3, const glm::vec2 &corner4)
 {
@@ -82,38 +50,34 @@ void ParticleRegionPolygon::Init(const bool isClockwise, const glm::vec2 &corner
     }
 }
 
-void ParticleRegionPolygon::DeactivateIfOutOfBounds(Particle *p)
+// TODO: header
+bool ParticleRegionPolygon::OutOfBounds(const Particle &p) const
 {
-    glm::vec2 toParticle = p->_position - _face1CenterPoint;
-    if (glm::dot(toParticle, _face1Normal) > 0)
+    // these could be condensed even more, but I spelled them out for the sake of 
+    // (1) demonstration and (2) debugging
+    if (glm::dot(p._position - _face1CenterPoint, _face1Normal) > 0)
     {
-        p->_isActive = 0;
-        return;
+        return true;
+    }
+    else if (glm::dot(p._position - _face2CenterPoint, _face2Normal) > 0)
+    {
+        return true;
+    }
+    else if (glm::dot(p._position - _face3CenterPoint, _face3Normal) > 0)
+    {
+        return true;
+    }
+    else if (glm::dot(p._position - _face4CenterPoint, _face4Normal) > 0)
+    {
+        return true;
     }
 
-    toParticle = p->_position - _face2CenterPoint;
-    if (glm::dot(toParticle, _face2Normal) > 0)
-    {
-        p->_isActive = 0;
-        return;
-    }
-
-    toParticle = p->_position - _face3CenterPoint;
-    if (glm::dot(toParticle, _face3Normal) > 0)
-    {
-        p->_isActive = 0;
-        return;
-    }
-
-    toParticle = p->_position - _face4CenterPoint;
-    if (glm::dot(toParticle, _face4Normal) > 0)
-    {
-        p->_isActive = 0;
-        return;
-    }
+    // not out of bounds 
+    return false;
 }
 
-void ParticleRegionPolygon::DeactivateIfOutOfBounds(std::vector<Particle> &particleCollection)
+// TODO: header
+void ParticleRegionPolygon::DeactivateIfOutOfBounds(std::vector<Particle> &particleCollection) const
 {
     for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
     {
@@ -144,4 +108,3 @@ void ParticleRegionPolygon::DeactivateIfOutOfBounds(std::vector<Particle> &parti
         particleCollection[particleIndex]._isActive = activeStatus;
     }
 }
-

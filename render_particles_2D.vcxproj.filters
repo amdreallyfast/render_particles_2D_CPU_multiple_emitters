@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="OpenGlErrorHandling.cpp" />
+    <ClCompile Include="PrimitiveGeneration.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ParticleUpdater.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitterPoint.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitterBar.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRegionSphere.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRegionPolygon.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="GenerateShader.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeometryData.h" />
+    <ClInclude Include="OpenGlErrorHandling.h" />
+    <ClInclude Include="PrimitiveGeneration.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Particle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="IParticleEmitter.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitterPoint.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitterBar.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="IParticleRegion.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRegionSphere.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRegionPolygon.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleUpdater.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="GenerateShader.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderStorage.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaderGeometry.frag" />
+    <None Include="shaderGeometry.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Particles">
+      <UniqueIdentifier>{813cac0c-eb2b-4bd3-9cb6-86d2ba9bb2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{888165dd-9b93-4108-b23e-0c57b4ac9561}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

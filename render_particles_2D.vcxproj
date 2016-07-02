@@ -148,11 +148,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MinMaxVelocity.cpp" />
     <ClCompile Include="OpenGlErrorHandling.cpp" />
-    <ClCompile Include="ParticleEmitter.cpp" />
-    <ClCompile Include="ParticleRegion.cpp" />
+    <ClCompile Include="ParticleEmitterBar.cpp" />
+    <ClCompile Include="ParticleEmitterPoint.cpp" />
+    <ClCompile Include="ParticleRegionPolygon.cpp" />
+    <ClCompile Include="ParticleRegionSphere.cpp" />
     <ClCompile Include="ParticleUpdater.cpp" />
     <ClCompile Include="PrimitiveGeneration.cpp" />
-    <ClCompile Include="RandomColor.cpp" />
     <ClCompile Include="RandomToast.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -165,15 +166,19 @@
   <ItemGroup>
     <ClInclude Include="GenerateShader.h" />
     <ClInclude Include="GeometryData.h" />
+    <ClInclude Include="IParticleEmitter.h" />
+    <ClInclude Include="IParticleRegion.h" />
     <ClInclude Include="MinMaxVelocity.h" />
     <ClInclude Include="OpenGlErrorHandling.h" />
     <ClInclude Include="Particle.h" />
-    <ClInclude Include="ParticleEmitter.h" />
-    <ClInclude Include="ParticleRegion.h" />
+    <ClInclude Include="ParticleEmitterBar.h" />
+    <ClInclude Include="ParticleEmitterPoint.h" />
+    <ClInclude Include="ParticleRegionPolygon.h" />
+    <ClInclude Include="ParticleRegionSphere.h" />
     <ClInclude Include="ParticleUpdater.h" />
     <ClInclude Include="PrimitiveGeneration.h" />
-    <ClInclude Include="RandomColor.h" />
     <ClInclude Include="RandomToast.h" />
+    <ClInclude Include="ShaderStorage.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

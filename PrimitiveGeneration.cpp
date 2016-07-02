@@ -3,7 +3,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glload/include/glload/gl_4_4.h"
-#include "RandomColor.h"
+#include "RandomToast.h"
 #include <cmath>
 
 /*-----------------------------------------------------------------------------------------------
@@ -172,6 +172,107 @@ void GenerateCircle(GeometryData *putDataHere)
 
     putDataHere->_drawStyle = GL_TRIANGLES;
 }
+
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Creates a wireframe polygon out of the coordinates that the user provides.  No scaling is 
+    performed.  The user is responsible for giving it the desired shape and size.
+Parameters:
+    putDataHere     Self-explanatory.
+    corners         A const collection of 2D vectors that specify the corners.
+    isClockwise     OpenGL defaults to culling clockwise shapes.  Since the corners are provided
+                    from outside the function, this option was provided to allow the user to 
+                    specify the vertices clockwise and not have them culled.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
+void GeneratePolygonWireframe(GeometryData *putDataHere, const std::vector<glm::vec2> &corners,
+    bool isClockwise)
+{
+    // the points are already provided, so put them into a contiguous structure and analyze them 
+    // to see how to put them on the texel range of [0,1] 
+    std::vector<MyVertex> localVerts;
+    for (size_t cornerIndex = 0; cornerIndex < corners.size(); cornerIndex++)
+    {
+        MyVertex v;
+        v._position = corners[cornerIndex];
+        localVerts.push_back(v);
+    }
+
+    // find a box in which they can fit, and use those for the texture coordinates
+    // Note: The texture will likely appear stretched or squished because of this, but this is a
+    // demo of functionality.
+    float minX = corners[0].x;
+    float maxX = corners[0].x;
+    float minY = corners[0].y;
+    float maxY = corners[0].y;
+    for (size_t cornerIndex = 0; cornerIndex < corners.size(); cornerIndex++)
+    {
+        const glm::vec2 &cornerRef = corners[cornerIndex];
+        if (cornerRef.x < minX)
+        {
+            minX = cornerRef.x;
+        }
+        else if (cornerRef.x > maxX)
+        {
+            maxX = cornerRef.x;
+        }
+
+        if (cornerRef.y < minY)
+        {
+            minY = cornerRef.y;
+        }
+        else if (cornerRef.y > maxY)
+        {
+            maxY = cornerRef.y;
+        }
+    }
+
+    // now go through each vertex to see where they fall on the min/max values
+    float xRange = maxX - minX;
+    float yRange = maxY - minY;
+    for (size_t vertexIndex = 0; vertexIndex < localVerts.size(); vertexIndex++)
+    {
+        MyVertex &vRef = localVerts[vertexIndex];
+        vRef._texturePosition.s = (vRef._position.x - minX) / xRange;
+        vRef._texturePosition.t = (vRef._position.y - minY) / yRange;
+    }
+
+    // finally created the vertices, so now copy them into the geometry structure
+    putDataHere->_verts = localVerts;
+
+    // indices are assumed to be from the first corner to the last and back around to the first
+    std::vector<GLushort> localIndices;
+    if (isClockwise)
+    {
+        // OpenGL does things counterclockwise, so do the loop backwards
+        for (size_t vertexIndex = localVerts.size() - 1; vertexIndex >=0; vertexIndex++)
+        {
+            localIndices.push_back(vertexIndex);
+        }
+
+        // loop back around
+        localIndices.push_back(localVerts.size() - 1);
+    }
+    else
+    {
+        for (size_t vertexIndex = 0; vertexIndex < localVerts.size(); vertexIndex++)
+        {
+            localIndices.push_back(vertexIndex);
+        }
+
+        // loop back around
+        localIndices.push_back(0);
+    }
+
+    // copy the indices into the geometry
+    putDataHere->_indices = localIndices;
+
+    // this is a wireframe, so don't fill it in
+    putDataHere->_drawStyle = GL_LINES;
+}
+
 
 /*-----------------------------------------------------------------------------------------------
 Description:

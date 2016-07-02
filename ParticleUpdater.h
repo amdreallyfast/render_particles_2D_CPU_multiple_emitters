@@ -1,28 +1,32 @@
 #pragma once
 
 #include "Particle.h"
-#include "ParticleEmitter.h"
-#include "ParticleRegion.h"
+#include "IParticleEmitter.h"
+#include "IParticleRegion.h"
 #include <vector>
 
+// TODO: header
+// contains a region and an emitter
 class ParticleUpdater
 {
 public:
     ParticleUpdater();
     
-    // these will be reduced to interfaces soon
-    void SetRegion(const ParticleRegionSphere *region);
-    void SetRegion(const ParticleRegionPolygon *region);
-    
-    // these will be reduced to interfaces soon
-    void SetEmitter(const ParticleEmitterPoint *emitter, const int maxParticlesEmittedPerFrame);
-    void SetEmitter(const ParticleEmitterBar *emitter, const int maxParticlesEmittedPerFrame);
+    void SetRegion(const IParticleRegion *pRegion);
 
-    void Update(std::vector<Particle> &particleCollection);
+    // TODO: multiple emitters
+    void SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame);
+
+    void Update(std::vector<Particle> &particleCollection, const float deltaTimeSec) const;
 
 private:
-    ParticleRegionSphere *_regionSphere;
-    ParticleRegionPolygon *_regionPolygon;
-    ParticleEmitterPoint *_emitterPoint;
-    ParticleEmitterPoint *_emitterBar;
+    // the form "const something *" means that it is a pointer to a const something, so the 
+    // pointer can be changed for a new region or emitter, but the region or emitter itself 
+    // can't be altered
+
+    const IParticleRegion *_pRegion;
+    const IParticleEmitter *_pEmitter;
+    
+    // TODO: when using multiple emitters, associate one of these with each emitter
+    int _maxParticlesEmittedPerFrame;
 };
