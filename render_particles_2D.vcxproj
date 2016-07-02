@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{612CB533-6A7D-4936-B6E9-9646D44C868D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>render_multiple_textures</RootNamespace>
+    <RootNamespace>render_particles_2D</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -146,21 +146,34 @@
   <ItemGroup>
     <ClCompile Include="GenerateShader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MinMaxVelocity.cpp" />
     <ClCompile Include="OpenGlErrorHandling.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
+    <ClCompile Include="ParticleRegion.cpp" />
+    <ClCompile Include="ParticleUpdater.cpp" />
     <ClCompile Include="PrimitiveGeneration.cpp" />
     <ClCompile Include="RandomColor.cpp" />
+    <ClCompile Include="RandomToast.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.frag" />
-    <None Include="shader.vert" />
+    <None Include="shaderParticle.frag" />
+    <None Include="shaderParticle.vert" />
+    <None Include="shaderGeometry.frag" />
+    <None Include="shaderGeometry.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GenerateShader.h" />
     <ClInclude Include="GeometryData.h" />
+    <ClInclude Include="MinMaxVelocity.h" />
     <ClInclude Include="OpenGlErrorHandling.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleEmitter.h" />
+    <ClInclude Include="ParticleRegion.h" />
+    <ClInclude Include="ParticleUpdater.h" />
     <ClInclude Include="PrimitiveGeneration.h" />
     <ClInclude Include="RandomColor.h" />
+    <ClInclude Include="RandomToast.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

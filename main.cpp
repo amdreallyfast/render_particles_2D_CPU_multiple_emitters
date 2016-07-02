@@ -39,34 +39,9 @@
 #include "PrimitiveGeneration.h"
 #include "Texture.h"
 
-// for moving the shapes around in window space
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 // in a bigger program, this would be stored in some kind of shader storage
 GLuint gProgramId;
 
-// in a bigger program, geometry data would be stored in some kind of "scene" or in a renderer
-// or behind door number 3 so that collision boxes could get at the vertex data
-GeometryData gTriangle;
-GeometryData gBox;
-GeometryData gCircle;
-
-// in a bigger program, I don't know where these would be stored, but a copy of the texture IDs
-// would likely be stored with the geometry that they were associated with
-GLuint gTexture1Id;
-GLuint gTexture2Id;
-GLuint gTexture3Id;
-
-// in a bigger program, these would probably be stored with the textures and there would be some 
-// kind of texture-sampler pair stored somewhere because a texture always needs to be associated
-// with its texture parameters
-GLuint gSamplerId;
-
-// in a bigger program, uniform locations would probably be stored in the same place as the 
-// shader programs
-GLint gUnifTextureSampler;
-GLint gUnifMatrixTransform;
 
 
 /*-----------------------------------------------------------------------------------------------
@@ -94,6 +69,10 @@ void Init()
     glDepthRange(0.0f, 1.0f);
 
     gProgramId = GenerateShaderProgram();
+
+    GenerateParticleEmitter(1000);
+
+
     gUnifMatrixTransform = glGetUniformLocation(gProgramId, "translateMatrixWindowSpace");
     gUnifTextureSampler = glGetUniformLocation(gProgramId, "tex");
 
