@@ -115,12 +115,10 @@ void Init()
     // make a point emitter at the center of a circular region of the same location and size as 
     // the circle primitive (currently (7-4-2016) hard-coded as 0.25 radius)
 
-    gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.0f, +0.0f), 0.5f);
-    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
-    //gpParticleRegion = new ParticleRegionPolygon(polygonCorners);
-    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
-    gpParticleEmitter = new ParticleEmitterBar(glm::vec2(-0.2f, -0.25f), glm::vec2(+0.15, +0.2f),
-        glm::vec2(-0.1f, -0.6f), 0.1f, 0.5f);
+    //gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.0f, +0.0f), 0.5f);
+    gpParticleRegion = new ParticleRegionPolygon(polygonCorners);
+    gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
+    //gpParticleEmitter = new ParticleEmitterBar(glm::vec2(-0.2f, -0.25f), glm::vec2(+0.15, +0.2f), glm::vec2(-0.1f, -0.6f), 0.1f, 0.5f);
 
 
 
@@ -159,6 +157,12 @@ void Display()
 
     glUseProgram(gProgramId);
 
+    static unsigned int frameCounter = 0;
+    frameCounter++;
+    if (frameCounter % 100 == 0)
+    {
+        printf("frame count = %d\n", frameCounter);
+    }
 
     //// put the circle up and to the right
     //// Note: Remember that this program is "barebones", so translation must be in window space 

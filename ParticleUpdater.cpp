@@ -79,7 +79,9 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
         if (_pRegion->OutOfBounds(particleRef))
         {
             particleRef._isActive = false;
-            _pEmitter->ResetParticle(&(particleCollection[particleIndex]));
+            Particle pCopy = (particleCollection[particleIndex]);
+            _pEmitter->ResetParticle(&pCopy);
+            particleCollection[particleIndex] = pCopy;
         }
 
         // TODO: ?a way to make these conditions into assignments to avoid the pipeline thrashing? perhaps take advantage of "is active" being an integer??
