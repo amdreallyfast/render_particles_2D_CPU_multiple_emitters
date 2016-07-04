@@ -1,8 +1,9 @@
 #include "RandomToast.h"
 #include <climits>
 
-
+// initial values for xorshf96()
 static unsigned long x = 123456789, y = 362436069, z = 521288629;
+
 /*-----------------------------------------------------------------------------------------------
 Description:
     Marsaglia's xorshf generator.  According to 

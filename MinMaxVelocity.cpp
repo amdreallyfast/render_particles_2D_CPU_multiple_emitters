@@ -4,36 +4,78 @@
 #include "RandomToast.h"
 
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Ensures that the object starts object with initialized values.
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 MinMaxVelocity::MinMaxVelocity() :
-    _min(-1.0f),
-    _velocityDelta(-1.0f),
+    _min(0.0f),
+    _velocityDelta(0.0f),
     _useRandomDir(true) // until a direction is set, assume random
 {
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Initializes the magnitudes of the minimum veocity and the velocity delta.
+Parameters: 
+    min     The minimum velocity in window space (XY on range [-1,+1].
+    max     The maximum velocity in window space.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 void MinMaxVelocity::SetMinMaxVelocity(const float min, const float max)
 {
     _min = min;
     _velocityDelta = max - min;
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Initializes the minimum and delta velocity directions.  Normalizes the provided value, so the
+    user does not need to normalize the direction themselves.
+Parameters:
+    dir     Self-explanatory.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 void MinMaxVelocity::SetDir(const glm::vec2 &dir)
 {
-    _dir = dir;
+    _dir = glm::normalize(dir);
     _useRandomDir = false;
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Tells the object to use a random velocity direction every time "get new" is called instead of
+    the provided direction.
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 void MinMaxVelocity::UseRandomDir()
 {
     _dir = glm::vec2();
     _useRandomDir = true;
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Generates a new velocity vector between the previously provided minimum and maximum values
+    (or 0 if nothing was set after this object was instatiated) and in the provided direction 
+    (or a random direction if no direction was set).
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 glm::vec2 MinMaxVelocity::GetNew() const
 {
     //float velocityVariation = ((float)rand() * INVERSE_RAND_MAX) * _velocityDelta;

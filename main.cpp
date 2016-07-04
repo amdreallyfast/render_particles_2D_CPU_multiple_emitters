@@ -119,7 +119,8 @@ void Init()
     //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
     //gpParticleRegion = new ParticleRegionPolygon(polygonCorners);
     //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
-    gpParticleEmitter = new ParticleEmitterBar(glm::vec2(-0.2f, -0.25f), glm::vec2(-0.2, +0.25f), 0.1f, 0.5f);
+    gpParticleEmitter = new ParticleEmitterBar(glm::vec2(-0.2f, -0.25f), glm::vec2(+0.15, +0.2f),
+        glm::vec2(-0.1f, -0.6f), 0.1f, 0.5f);
 
 
 
