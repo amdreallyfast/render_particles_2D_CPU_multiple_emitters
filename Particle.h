@@ -11,5 +11,8 @@ struct Particle
 
     // in order to prevent the emitter from sending out all particles at once, the particle 
     // needs to be able to turn "off" once it is reset until the emitter can get to it
-    bool _isActive;
+    // Note: Booleans cannot be uploaded to the shader 
+    // (https://www.opengl.org/sdk/docs/man/html/glVertexAttribPointer.xhtml), so send the 
+    // "is active" flag as an integer.  It is understood 
+    int _isActive;
 };

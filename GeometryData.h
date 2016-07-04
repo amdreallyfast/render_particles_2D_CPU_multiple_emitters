@@ -27,6 +27,9 @@ struct GeometryData
         // -1.  Just initialize them to 0 and be sure to not use one without being initialized.
     }
 
+    // TODO: make Init(...) function rather than have the Init function off in PrimitiveGeneration.h/cpp
+
+
     // save on the large header inclusion of OpenGL and write out these primitive types instead 
     // of using the OpenGL typedefs
     // Note: IDs are GLuint (unsigned int), draw style is GLenum (unsigned int), GLushort is 

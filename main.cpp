@@ -43,7 +43,9 @@
 
 // for particles
 #include "ParticleRegionCircle.h"
+#include "ParticleRegionPolygon.h"
 #include "ParticleEmitterPoint.h"
+#include "ParticleStorage.h"
 #include "ParticleUpdater.h"
 
 // for moving the shapes around in window space
@@ -66,8 +68,8 @@ GeometryData gPolygon;
 IParticleRegion *gpParticleRegion;
 IParticleEmitter *gpParticleEmitter;
 ParticleUpdater gParticleUpdater;
-const unsigned int MAX_PARTICLE_COUNT = 500;
-Particle gAllParticles[MAX_PARTICLE_COUNT];
+ParticleStorage gParticleStorage;
+const unsigned int MAX_PARTICLE_COUNT = 1000;
 
 /*-----------------------------------------------------------------------------------------------
 Description:
@@ -98,11 +100,11 @@ void Init()
 
     //GenerateCircle(&gCircle);
 
-    //std::vector<glm::vec2> polygonCorners;
-    //polygonCorners.push_back(glm::vec2(-0.25f, -0.5f));
-    //polygonCorners.push_back(glm::vec2(+0.25f, -0.5f));
-    //polygonCorners.push_back(glm::vec2(+0.5f, +0.25f));
-    //polygonCorners.push_back(glm::vec2(-0.5f, +0.25f));
+    std::vector<glm::vec2> polygonCorners;
+    polygonCorners.push_back(glm::vec2(-0.25f, -0.5f));
+    polygonCorners.push_back(glm::vec2(+0.25f, -0.5f));
+    polygonCorners.push_back(glm::vec2(+0.5f, +0.25f));
+    polygonCorners.push_back(glm::vec2(-0.5f, +0.25f));
     //GeneratePolygonWireframe(&gPolygon, polygonCorners, false);
 
     //InitializeGeometry(gProgramId, &gPolygon);
@@ -110,15 +112,19 @@ void Init()
 
     // make a point emitter at the center of a circular region of the same location and size as 
     // the circle primitive (currently (7-4-2016) hard-coded as 0.25 radius)
-    gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.3f, +0.3f), 0.25f);
-    gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.3f, +0.3f), 0.1f, 0.5f);
+
+    //gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.3f, +0.3f), 0.5f);
+    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.3f, +0.3f), 0.1f, 0.5f);
+    gpParticleRegion = new ParticleRegionPolygon(false, polygonCorners[0], polygonCorners[1], polygonCorners[2], polygonCorners[3]);
+    gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
+    gParticleStorage.Init(gProgramId, MAX_PARTICLE_COUNT);
     gParticleUpdater.SetRegion(gpParticleRegion);
-    gParticleUpdater.SetEmitter(gpParticleEmitter, 10);
+    gParticleUpdater.SetEmitter(gpParticleEmitter, 5);
 
     // start all particles at the emitter's orign
     for (size_t particleCount = 0; particleCount < MAX_PARTICLE_COUNT; particleCount++)
     {
-        gpParticleEmitter->ResetParticle(&(gAllParticles[particleCount]));
+        gpParticleEmitter->ResetParticle(&(gParticleStorage._allParticles[particleCount]));
     }
 }
 
@@ -142,6 +148,9 @@ void Display()
 
     glm::mat4 translateMatrix;
 
+    gParticleUpdater.Update(gParticleStorage._allParticles, 0.01f);
+
+
     glUseProgram(gProgramId);
 
 
@@ -158,6 +167,15 @@ void Display()
     //glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
     //glBindVertexArray(gPolygon._vaoId);
     //glDrawElements(gPolygon._drawStyle, gPolygon._indices.size(), GL_UNSIGNED_SHORT, 0);
+
+    glBindVertexArray(gParticleStorage._vaoId);
+    glBindBuffer(GL_ARRAY_BUFFER, gParticleStorage._arrayBufferId);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, gParticleStorage._sizeBytes, gParticleStorage._allParticles.data());
+    glDrawArrays(gParticleStorage._drawStyle, 0, gParticleStorage._allParticles.size());
+
+
+
+    // TODO: remove everything from this project that has to do with textures; they aren't used in this demo
 
 
 
