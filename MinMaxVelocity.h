@@ -2,6 +2,7 @@
 
 #include "glm/vec2.hpp"
 
+// TODO: header
 class MinMaxVelocity
 {
 public:

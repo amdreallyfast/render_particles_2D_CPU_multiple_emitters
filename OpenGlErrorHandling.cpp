@@ -58,6 +58,7 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
         break;
     }
 
+    printf("DebugFunc: length = '%d', id = '%u', userParam = '%x'\n", length, id, (unsigned int)userParam);
     printf("%s from %s,\t%s priority\nMessage: %s\n",
         errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message);
 }

@@ -15,13 +15,7 @@ static glm::vec2 RotateNeg90(const glm::vec2 &v)
 }
 
 // TODO: header
-ParticleRegionPolygon::ParticleRegionPolygon()
-{
-    // the glm::vec2 objects have initializers to 0, so don't bother initializing them
-}
-
-// TODO: header
-void ParticleRegionPolygon::Init(const bool isClockwise, const glm::vec2 &corner1, const glm::vec2 &corner2,
+ParticleRegionPolygon::ParticleRegionPolygon(const bool isClockwise, const glm::vec2 &corner1, const glm::vec2 &corner2,
     const glm::vec2 &corner3, const glm::vec2 &corner4)
 {
     // the normals should point outwards

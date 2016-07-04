@@ -47,7 +47,7 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
             _pEmitter->ResetParticle(&(particleCollection[particleIndex]));
         }
 
-        // if vs else-if()? eh?
+        // if vs else-if()? eh
         if (!particleRef._isActive && emitCounter < _maxParticlesEmittedPerFrame)
         {
             particleRef._isActive = true;

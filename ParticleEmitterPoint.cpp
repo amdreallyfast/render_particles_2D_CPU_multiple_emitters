@@ -3,8 +3,7 @@
 #include "RandomToast.h"
 
 // TODO: header
-ParticleEmitterPoint::ParticleEmitterPoint(const glm::vec2 &emitterPos, const float minVel, 
-    const float maxVel)
+ParticleEmitterPoint::ParticleEmitterPoint(const glm::vec2 &emitterPos, const float minVel, const float maxVel)
 {
     _position = emitterPos;
     _velocityCalculator.SetMinMaxVelocity(minVel, maxVel);

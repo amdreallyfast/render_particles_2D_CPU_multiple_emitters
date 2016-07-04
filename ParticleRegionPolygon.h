@@ -6,11 +6,11 @@
 #include <vector>
 
 // TODO: header
-class ParticleRegionPolygon : IParticleRegion
+class ParticleRegionPolygon : public IParticleRegion
 {
 public:
-    ParticleRegionPolygon();
-    void Init(const bool isClockwise, const glm::vec2 &corner1, const glm::vec2 &corner2,
+    // TODO: take a vector of points like the polygon geometry does
+    ParticleRegionPolygon(const bool isClockwise, const glm::vec2 &corner1, const glm::vec2 &corner2,
         const glm::vec2 &corner3, const glm::vec2 &corner4);
 
     virtual bool OutOfBounds(const Particle &p) const;

@@ -247,23 +247,37 @@ void GeneratePolygonWireframe(GeometryData *putDataHere, const std::vector<glm::
     if (isClockwise)
     {
         // OpenGL does things counterclockwise, so do the loop backwards
-        for (size_t vertexIndex = localVerts.size() - 1; vertexIndex >=0; vertexIndex++)
+        for (size_t vertexIndex = localVerts.size() - 1; vertexIndex >=0; vertexIndex--)
         {
-            localIndices.push_back(vertexIndex);
+            // a line needs two points
+            localIndices.push_back((unsigned short)vertexIndex);
+            if (vertexIndex == 0)
+            {
+                // loop back around
+                localIndices.push_back((unsigned short)(localVerts.size() - 1));
+            }
+            else
+            {
+                localIndices.push_back((unsigned short)(vertexIndex - 1));
+            }
         }
-
-        // loop back around
-        localIndices.push_back(localVerts.size() - 1);
     }
     else
     {
         for (size_t vertexIndex = 0; vertexIndex < localVerts.size(); vertexIndex++)
         {
-            localIndices.push_back(vertexIndex);
+            // a line needs two points
+            localIndices.push_back((unsigned short)vertexIndex);
+            if (vertexIndex + 1 == localVerts.size())
+            {
+                // loop back around
+                localIndices.push_back(0);
+            }
+            else
+            {
+                localIndices.push_back((unsigned short)(vertexIndex + 1));
+            }
         }
-
-        // loop back around
-        localIndices.push_back(0);
     }
 
     // copy the indices into the geometry

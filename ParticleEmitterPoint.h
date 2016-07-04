@@ -7,12 +7,12 @@
 
 // TODO: header
 // knows how to reset particles that it is given
-class ParticleEmitterPoint : IParticleEmitter
+class ParticleEmitterPoint : public IParticleEmitter
 {
 public:
     // emits randomly from the origin point
     ParticleEmitterPoint(const glm::vec2 &emitterPos, const float minVel, const float maxVel);
-    void ResetParticle(Particle *resetThis) const;
+    virtual void ResetParticle(Particle *resetThis) const;
 private:
     glm::vec2 _position;
     float _radius;

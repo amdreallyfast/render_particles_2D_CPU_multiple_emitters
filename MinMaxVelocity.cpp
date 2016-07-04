@@ -4,6 +4,7 @@
 #include "RandomToast.h"
 
 
+// TODO: header
 MinMaxVelocity::MinMaxVelocity() :
     _min(-1.0f),
     _velocityDelta(-1.0f),
@@ -11,24 +12,28 @@ MinMaxVelocity::MinMaxVelocity() :
 {
 }
 
+// TODO: header
 void MinMaxVelocity::SetMinMaxVelocity(const float min, const float max)
 {
     _min = min;
     _velocityDelta = max - min;
 }
 
+// TODO: header
 void MinMaxVelocity::SetDir(const glm::vec2 &dir)
 {
     _dir = dir;
     _useRandomDir = false;
 }
 
+// TODO: header
 void MinMaxVelocity::UseRandomDir()
 {
     _dir = glm::vec2();
     _useRandomDir = true;
 }
 
+// TODO: header
 glm::vec2 MinMaxVelocity::GetNew() const
 {
     //float velocityVariation = ((float)rand() * INVERSE_RAND_MAX) * _velocityDelta;

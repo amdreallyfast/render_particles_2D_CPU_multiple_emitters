@@ -33,16 +33,41 @@
 // for printf(...)
 #include <stdio.h>
 
+// for basic OpenGL stuff
 #include "OpenGlErrorHandling.h"
 #include "GenerateShader.h"
+
+// for drawing shapes
 #include "GeometryData.h"
 #include "PrimitiveGeneration.h"
-#include "Texture.h"
+
+// for particles
+#include "ParticleRegionCircle.h"
+#include "ParticleEmitterPoint.h"
+#include "ParticleUpdater.h"
+
+// for moving the shapes around in window space
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // in a bigger program, this would be stored in some kind of shader storage
 GLuint gProgramId;
 
+// in a bigger program, uniform locations would probably be stored in the same place as the 
+// shader programs
+GLint gUnifMatrixTransform;
 
+// in a bigger program, geometry data would be stored in some kind of "scene" or in a renderer
+// or behind door number 3 so that collision boxes could get at the vertex data
+GeometryData gCircle;
+GeometryData gPolygon;
+
+// in a bigger program, ??where would particle stuff be stored??
+IParticleRegion *gpParticleRegion;
+IParticleEmitter *gpParticleEmitter;
+ParticleUpdater gParticleUpdater;
+const unsigned int MAX_PARTICLE_COUNT = 500;
+Particle gAllParticles[MAX_PARTICLE_COUNT];
 
 /*-----------------------------------------------------------------------------------------------
 Description:
@@ -69,26 +94,32 @@ void Init()
     glDepthRange(0.0f, 1.0f);
 
     gProgramId = GenerateShaderProgram();
+    //gUnifMatrixTransform = glGetUniformLocation(gProgramId, "translateMatrixWindowSpace");
 
-    //GenerateParticleEmitter(1000);
+    //GenerateCircle(&gCircle);
 
+    //std::vector<glm::vec2> polygonCorners;
+    //polygonCorners.push_back(glm::vec2(-0.25f, -0.5f));
+    //polygonCorners.push_back(glm::vec2(+0.25f, -0.5f));
+    //polygonCorners.push_back(glm::vec2(+0.5f, +0.25f));
+    //polygonCorners.push_back(glm::vec2(-0.5f, +0.25f));
+    //GeneratePolygonWireframe(&gPolygon, polygonCorners, false);
 
-    gUnifMatrixTransform = glGetUniformLocation(gProgramId, "translateMatrixWindowSpace");
-    gUnifTextureSampler = glGetUniformLocation(gProgramId, "tex");
+    //InitializeGeometry(gProgramId, &gPolygon);
+    //InitializeGeometry(gProgramId, &gCircle);
 
-    GenerateTriangle(&gTriangle);
-    GenerateBox(&gBox);
-    GenerateCircle(&gCircle);
-    InitializeGeometry(gProgramId, &gTriangle);
-    InitializeGeometry(gProgramId, &gBox);
-    InitializeGeometry(gProgramId, &gCircle);
+    // make a point emitter at the center of a circular region of the same location and size as 
+    // the circle primitive (currently (7-4-2016) hard-coded as 0.25 radius)
+    gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.3f, +0.3f), 0.25f);
+    gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.3f, +0.3f), 0.1f, 0.5f);
+    gParticleUpdater.SetRegion(gpParticleRegion);
+    gParticleUpdater.SetEmitter(gpParticleEmitter, 10);
 
-    gTexture1Id = CreateRandom3BeamTexture();
-    gTexture2Id = CreateRandom3BeamTexture();
-    gTexture3Id = CreateRandom3BeamTexture();
-
-    // the textures all share the same properties, so I'll use the same sampler for all
-    gSamplerId = CreateGenericSampler();
+    // start all particles at the emitter's orign
+    for (size_t particleCount = 0; particleCount < MAX_PARTICLE_COUNT; particleCount++)
+    {
+        gpParticleEmitter->ResetParticle(&(gAllParticles[particleCount]));
+    }
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -113,61 +144,23 @@ void Display()
 
     glUseProgram(gProgramId);
 
-    // bind the textures to the texture units, then use the sampler ID in the shader to select 
-    // which one to use
-    glActiveTexture(GL_TEXTURE0);
-    glBindSampler(0, gSamplerId);   // texture unit 0, but do NOT use GL_TEXTURE0
-    glBindTexture(GL_TEXTURE_2D, gTexture1Id);
-    
-    // alternately, GL_TEXTURE_0 + 1, in case you wanted to use a variable or something
-    // Note: Why not use texture unit 0 if the textures have the same properties?  Because 
-    // switching textures in and out of the texture units is computationally expensive compared
-    // to copying the texture parameters in the sampler.
-    // Also Note: In this simple example, in which the textures are only being used once per 
-    // draw, there is no benefit to using the textures in different texture units, but if they
-    // were being used more than once, it would be computationally much cheaper to copy the 
-    // texture parameters (that is, the samplers) than, for each thing being drawn, use one
-    // texture, switch it out, draw with that texture, switch it out, draw with that texture,
-    // repeat for each thing being drawn.  This was what used to happen in early graphics days
-    // when the number of texture units was small.  I am demonstrating multiple texture units
-    // in order to show how to make them work.
-    glActiveTexture(GL_TEXTURE0 + 1);   // alternately, GL_TEXTURE1
-    glBindSampler(1, gSamplerId);
-    glBindTexture(GL_TEXTURE_2D, gTexture2Id);
 
-    // same for third texture unit
-    glActiveTexture(GL_TEXTURE0 + 2);
-    glBindSampler(2, gSamplerId);
-    glBindTexture(GL_TEXTURE_2D, gTexture3Id);
+    //// put the circle up and to the right
+    //// Note: Remember that this program is "barebones", so translation must be in window space 
+    //// ([-1,+1] on X and Y).
+    //translateMatrix = glm::translate(glm::mat4(), glm::vec3(+0.3f, +0.3f, 0.0f));
+    //glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
+    //glBindVertexArray(gCircle._vaoId);
+    //glDrawElements(gCircle._drawStyle, gCircle._indices.size(), GL_UNSIGNED_SHORT, 0);
 
-    // this chunk of code demonstrates that the texture and texture parameters (sampler)  are 
-    // bound to a texture unit, so setting null bindings on an unused texture unit is hunky dory
-    glActiveTexture(GL_TEXTURE3);
-    glBindSampler(3, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    //// put the polygon down and to the left
+    //translateMatrix = glm::translate(glm::mat4(), glm::vec3(-0.3f, -0.3f, 0.0f));
+    //glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
+    //glBindVertexArray(gPolygon._vaoId);
+    //glDrawElements(gPolygon._drawStyle, gPolygon._indices.size(), GL_UNSIGNED_SHORT, 0);
 
-    // put the triangle up and to the right
-    // Note: Remember that this program is "barebones", so translation must be in window space 
-    // ([-1,+1] on X and Y).
-    translateMatrix = glm::translate(glm::mat4(), glm::vec3(+0.3f, +0.3f, 0.0f));
-    glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
-    glUniform1i(gUnifTextureSampler, 0);    // use texture unit 0
-    glBindVertexArray(gTriangle._vaoId);
-    glDrawElements(gTriangle._drawStyle, gTriangle._indices.size(), GL_UNSIGNED_SHORT, 0);
 
-    // put the box up and to the left
-    translateMatrix = glm::translate(glm::mat4(), glm::vec3(-0.3f, +0.3f, 0.0f));
-    glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
-    glUniform1i(gUnifTextureSampler, 1);    // texture unit 1
-    glBindVertexArray(gBox._vaoId);
-    glDrawElements(gBox._drawStyle, gBox._indices.size(), GL_UNSIGNED_SHORT, 0);
 
-    // put the circle down and center
-    translateMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, -0.3f, 0.0f));
-    glUniformMatrix4fv(gUnifMatrixTransform, 1, GL_FALSE, glm::value_ptr(translateMatrix));
-    glUniform1i(gUnifTextureSampler, 2);    // texture unit 2
-    glBindVertexArray(gCircle._vaoId);
-    glDrawElements(gCircle._drawStyle, gCircle._indices.size(), GL_UNSIGNED_SHORT, 0);
 
     // clean up bindings
     // Note: Don't bother going through each texture unit and unbinding it.  While unbinding is
@@ -295,21 +288,15 @@ void CleanupAll()
     // (2) silently delete something I didn't want.  Both are bad, so treat it nice.
     // Also Note: If I attempt to delete an ID that has already been deleted, that is ok.  OpenGL
     // will silently swallow that.
-    glDeleteBuffers(1, &gTriangle._arrayBufferId);
-    glDeleteBuffers(1, &gTriangle._elementBufferId);
-    glDeleteVertexArrays(1, &gTriangle._vaoId);
-    glDeleteBuffers(1, &gBox._arrayBufferId);
-    glDeleteBuffers(1, &gBox._elementBufferId);
-    glDeleteVertexArrays(1, &gBox._vaoId);
     glDeleteBuffers(1, &gCircle._arrayBufferId);
     glDeleteBuffers(1, &gCircle._elementBufferId);
     glDeleteVertexArrays(1, &gCircle._vaoId);
+    glDeleteBuffers(1, &gPolygon._arrayBufferId);
+    glDeleteBuffers(1, &gPolygon._elementBufferId);
+    glDeleteVertexArrays(1, &gPolygon._vaoId);
 
-    glDeleteTextures(1, &gTexture1Id);
-    glDeleteTextures(1, &gTexture2Id);
-    glDeleteTextures(1, &gTexture3Id);
-    glDeleteSamplers(1, &gSamplerId);
-
+    delete(gpParticleRegion);
+    delete(gpParticleEmitter);
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -337,7 +324,7 @@ int main(int argc, char *argv[])
     glutInitContextProfile(GLUT_CORE_PROFILE);
 
     // enable this for automatic message reporting (see OpenGlErrorHandling.cpp)
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
     glutInitContextFlags(GLUT_DEBUG);
 #endif

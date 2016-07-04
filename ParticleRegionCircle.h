@@ -7,11 +7,10 @@
 
 // TODO: header
 // contains boundaries and the logic to determine when a particle goes outside of spherical boundaries
-class ParticleRegionSphere : IParticleRegion
+class ParticleRegionCircle : public IParticleRegion
 {
 public:
-    ParticleRegionSphere();
-    void Init(const glm::vec2 &center, const float radius);
+    ParticleRegionCircle(const glm::vec2 &center, const float radius);
 
     virtual bool OutOfBounds(const Particle &p) const;
     virtual void DeactivateIfOutOfBounds(std::vector<Particle> &particleCollection) const;

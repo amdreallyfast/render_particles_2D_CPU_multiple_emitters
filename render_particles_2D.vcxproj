@@ -151,7 +151,7 @@
     <ClCompile Include="ParticleEmitterBar.cpp" />
     <ClCompile Include="ParticleEmitterPoint.cpp" />
     <ClCompile Include="ParticleRegionPolygon.cpp" />
-    <ClCompile Include="ParticleRegionSphere.cpp" />
+    <ClCompile Include="ParticleRegionCircle.cpp" />
     <ClCompile Include="ParticleUpdater.cpp" />
     <ClCompile Include="PrimitiveGeneration.cpp" />
     <ClCompile Include="RandomToast.cpp" />
@@ -174,7 +174,7 @@
     <ClInclude Include="ParticleEmitterBar.h" />
     <ClInclude Include="ParticleEmitterPoint.h" />
     <ClInclude Include="ParticleRegionPolygon.h" />
-    <ClInclude Include="ParticleRegionSphere.h" />
+    <ClInclude Include="ParticleRegionCircle.h" />
     <ClInclude Include="ParticleUpdater.h" />
     <ClInclude Include="PrimitiveGeneration.h" />
     <ClInclude Include="RandomToast.h" />

@@ -14,14 +14,14 @@
     <ClCompile Include="ParticleEmitterBar.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleRegionSphere.cpp">
-      <Filter>Particles</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleRegionPolygon.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
     <ClCompile Include="GenerateShader.cpp">
       <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRegionCircle.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,9 +44,6 @@
     <ClInclude Include="IParticleRegion.h">
       <Filter>Particles</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleRegionSphere.h">
-      <Filter>Particles</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleRegionPolygon.h">
       <Filter>Particles</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="ShaderStorage.h">
       <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRegionCircle.h">
+      <Filter>Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

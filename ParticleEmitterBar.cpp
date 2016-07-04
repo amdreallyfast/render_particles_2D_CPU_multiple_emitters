@@ -3,8 +3,8 @@
 #include "RandomToast.h"
 
 // TODO: header
-ParticleEmitterBar::ParticleEmitterBar(const glm::vec2 &p1, const glm::vec2 &p2,
-    const float minVel, const float maxVel)
+ParticleEmitterBar::ParticleEmitterBar(const glm::vec2 &p1, const glm::vec2 &p2, const float minVel,
+    const float maxVel)
 {
     _barStart = p1;
     _barStartToEnd = p2 - p1;

@@ -29,7 +29,7 @@ unsigned int GenerateShaderProgram()
     // returns is a copy of the data, not a reference or pointer to it, so it will go bad as 
     // soon as the std::string object disappears.  To deal with it, copy the data into a 
     // temporary string.
-    std::ifstream shaderFile("shader.vert");
+    std::ifstream shaderFile("shaderGeometry.vert");
     std::stringstream shaderData;
     shaderData << shaderFile.rdbuf();
     shaderFile.close();
@@ -55,7 +55,7 @@ unsigned int GenerateShaderProgram()
     }
 
     // load up the fragment shader and compiler it
-    shaderFile.open("shader.frag");
+    shaderFile.open("shaderGeometry.frag");
     shaderData.str(std::string());      // because stringstream::clear() only clears error flags
     shaderData.clear();                 // clear any error flags that may have popped up
     shaderData << shaderFile.rdbuf();
