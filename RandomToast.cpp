@@ -2,16 +2,29 @@
 #include <climits>
 
 
-// Marsaglia's xorshf generator
-// According to http://stackoverflow.com/questions/1640258/need-a-fast-random-generator-for-c, 
-// unless I'm doing cryptography, this generator rocks.
-
 static unsigned long x = 123456789, y = 362436069, z = 521288629;
-//unsigned long xorshf96(void) {          //period 2^96-1
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Marsaglia's xorshf generator.  According to 
+    http://stackoverflow.com/questions/1640258/need-a-fast-random-generator-for-c, unless I'm 
+    doing cryptography, this generator rocks.  It is apparently very good for doing loads of 
+    randomness at runtime, and I've read that it is notably faster than rand().
+    
+    Also, rand() is getting discouraged in C++14, likely because it provides 16 bits of 
+    randomness, which is more than good enough for many applications, but since it is getting 
+    old, I might as well get a newer and faster generator.
+    http://stackoverflow.com/questions/22600100/why-are-stdshuffle-methods-being-deprecated-in-c14
 
-// TODO: header
-// the algorithm is positive if stuck into an unsigned long but positive and negative if stuck into a signed long
-static unsigned long FastRand(void) {          //period 2^96-1
+    The algorithm operates on all of the 64bits in the long integer.  It is positive if stuck 
+    into an unsigned long but can be negative if stuck into a signed long because the most 
+    significant bit (the signed bit) might be 1.
+Parameters: None
+Returns:    
+    A decently chaotic unsigned long (64bit) number.
+Exception:  Safe
+Creator:    Some online dude named Marsaglia (unknown date).
+-----------------------------------------------------------------------------------------------*/
+static unsigned long xorshf96(void) {          //period 2^96-1
     unsigned long t;
     x ^= x << 16;
     x ^= x >> 5;
@@ -25,25 +38,52 @@ static unsigned long FastRand(void) {          //period 2^96-1
     return z;
 }
 
+// used for fast (faster than dividing, at least) reduction to the range [0,+1]
 static const float INVERSE_UNSIGNED_LONG = 1.0f / ULONG_MAX;
 
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Generates a random positve float on the range [0,+1].
+Parameters: None
+Returns:    
+    See description.
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 float RandomOnRange0to1()
 {
-    return ((float)FastRand() * INVERSE_UNSIGNED_LONG);
+    return ((float)xorshf96() * INVERSE_UNSIGNED_LONG);
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    A simple encapsulation for Marsaglia xorshf96() that generates a positive random long integer
+    without exposing how.
+Parameters: None
+Returns:
+    See description.
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 unsigned long Random()
 {
-    return FastRand();
+    return xorshf96();
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    A simple encapsulation for Marsaglia xorshf96() that generates a random long integer without
+    exposing how and may be positive or negative.
+Parameters: None
+Returns:
+    See description.
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 long RandomPosAndNeg()
 {
-    return (long)(FastRand());
+    return (long)(xorshf96());
 }
 
 /*-----------------------------------------------------------------------------------------------

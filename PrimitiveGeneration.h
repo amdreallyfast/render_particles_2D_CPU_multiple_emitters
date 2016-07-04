@@ -9,4 +9,3 @@ void GenerateBox(GeometryData *putDataHere);
 void GenerateCircle(GeometryData *putDataHere);
 void GeneratePolygonWireframe(GeometryData *putDataHere, const std::vector<glm::vec2> &corners, 
     bool isClockwise);
-void InitializeGeometry(unsigned int programId, GeometryData *initThis);

@@ -4,6 +4,11 @@
 #include "glm/vec3.hpp"
 #include <vector>
 
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Stores all info necessary to draw a single vertex.
+Creator:    John Cox (6-12-2016)
+-----------------------------------------------------------------------------------------------*/
 struct MyVertex
 {
     glm::vec2 _position;
@@ -18,16 +23,8 @@ Creator:    John Cox (6-12-2016)
 -----------------------------------------------------------------------------------------------*/
 struct GeometryData
 {
-    GeometryData() :
-        _vaoId(0),
-        _arrayBufferId(0),
-        _elementBufferId(0)
-    {
-        // OpenGL IDs can start at 0, but they are also unsigned, so they should not be set to 
-        // -1.  Just initialize them to 0 and be sure to not use one without being initialized.
-    }
-
-    // TODO: make Init(...) function rather than have the Init function off in PrimitiveGeneration.h/cpp
+    GeometryData();
+    void Init(unsigned int programId);
 
 
     // save on the large header inclusion of OpenGL and write out these primitive types instead 

@@ -2,7 +2,7 @@
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
-#include "glload/include/glload/gl_4_4.h"
+#include "glload/include/glload/gl_4_4.h"   // for GLushort
 #include "RandomToast.h"
 #include <cmath>
 
@@ -287,74 +287,3 @@ void GeneratePolygonWireframe(GeometryData *putDataHere, const std::vector<glm::
     putDataHere->_drawStyle = GL_LINES;
 }
 
-
-/*-----------------------------------------------------------------------------------------------
-Description:
-    Generates a vertex buffer, index buffer, and vertex array object (contains vertex array
-    attributes) for the provided geometry data.
-Parameters:
-    programId   Program binding is required for vertex attributes.
-    initThis    Self-explanatory.
-Returns:    None
-Exception:  Safe
-Creator:    John Cox (6-12-2016)
------------------------------------------------------------------------------------------------*/
-void InitializeGeometry(GLuint programId, GeometryData *initThis)
-{
-    // must bind program or else the vertex arrays will either blow up or refer to a 
-    // non-existent program
-    glUseProgram(programId);
-
-    // vertex array buffer
-    GLuint arrayBufferId = 0;
-    glGenBuffers(1, &arrayBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, arrayBufferId);
-    initThis->_arrayBufferId = arrayBufferId;
-
-    unsigned int vertBufferSizeBytes = 
-        initThis->_verts.size() * sizeof(initThis->_verts[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertBufferSizeBytes, initThis->_verts.data(), GL_STATIC_DRAW);
-
-    // vertex attribute arrays
-    // Note: I really don't like these, but this is about as clear as I can make it.
-    GLuint vaoId = 0;
-    glGenVertexArrays(1, &vaoId);
-    glBindVertexArray(vaoId);
-    initThis->_vaoId = vaoId;
-
-    unsigned int vertexAttribArrayIndex = 0;
-    unsigned int vertexBufferStartOffset = 0;
-    unsigned int strideSizeBytes = sizeof(initThis->_verts[0]);
-
-    // position
-    // Note: Just hard code a 2 for the number of floats in a vec2.
-    glEnableVertexAttribArray(vertexAttribArrayIndex);
-    glVertexAttribPointer(vertexAttribArrayIndex, 2, GL_FLOAT, GL_FALSE, 
-        strideSizeBytes, (void *)vertexBufferStartOffset);
-
-    // color
-    // Note: Like for position, hard code the number of floats (2 for vec2).
-    vertexAttribArrayIndex++;
-    vertexBufferStartOffset += sizeof(initThis->_verts[0]._position);
-    glEnableVertexAttribArray(vertexAttribArrayIndex);
-    glVertexAttribPointer(vertexAttribArrayIndex, 2, GL_FLOAT, GL_FALSE, 
-        strideSizeBytes, (void *)vertexBufferStartOffset);
-
-    // indices buffer
-    GLuint elementBufferId = 0;
-    glGenBuffers(1, &elementBufferId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
-    initThis->_elementBufferId = elementBufferId;
-
-    unsigned int elementBufferSizeBytes = 
-        initThis->_indices.size() * sizeof(initThis->_indices[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementBufferSizeBytes, initThis->_indices.data(), GL_STATIC_DRAW);
-
-    // must unbind array object BEFORE unbinding the buffer or else the array object will think 
-    // that its vertex attribute pointers will believe that they should refer to buffer 0
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glUseProgram(0);
-}

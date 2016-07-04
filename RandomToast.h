@@ -7,7 +7,7 @@ Description:
     Both the "min max velocity" and "particle emiter bar" objects use randomness, so rather than
     have them both attempting to seed random, I decided to put the randomness handling off on its
     own, and while I was at it, I decided to put in some randomness functions that have become 
-    handy while wroking out the particle emission and min-max velocity problems.
+    handy while working out the particle emission and min-max velocity problems.
 
     This could have a class, but it would have had to have been a singleton or static or had a
     global, and the whole point of that would have been to make sure that randomness was seeded.

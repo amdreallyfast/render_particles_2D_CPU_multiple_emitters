@@ -5,8 +5,15 @@
 #include "IParticleRegion.h"
 #include <vector>
 
-// TODO: header
-// contains a region and an emitter
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Encapsulates particle updating with a given emitter and region.  The main function is the 
+    "update" method.
+
+    Note: When this class goes "poof", it won't delete the given pointers.  This is ensured by
+    only using const pointers.
+Creator:    John Cox (7-4-2016)
+-----------------------------------------------------------------------------------------------*/
 class ParticleUpdater
 {
 public:

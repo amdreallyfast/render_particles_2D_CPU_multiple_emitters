@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GenerateShader.cpp" />
+    <ClCompile Include="GeometryData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MinMaxVelocity.cpp" />
     <ClCompile Include="OpenGlErrorHandling.cpp" />
@@ -156,7 +157,6 @@
     <ClCompile Include="ParticleUpdater.cpp" />
     <ClCompile Include="PrimitiveGeneration.cpp" />
     <ClCompile Include="RandomToast.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderParticle.frag" />
@@ -181,7 +181,6 @@
     <ClInclude Include="PrimitiveGeneration.h" />
     <ClInclude Include="RandomToast.h" />
     <ClInclude Include="ShaderStorage.h" />
-    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

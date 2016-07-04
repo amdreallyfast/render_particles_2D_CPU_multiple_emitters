@@ -3,8 +3,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGlErrorHandling.cpp" />
-    <ClCompile Include="PrimitiveGeneration.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ParticleUpdater.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
@@ -26,12 +24,15 @@
     <ClCompile Include="ParticleStorage.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
+    <ClCompile Include="PrimitiveGeneration.cpp">
+      <Filter>Solids</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryData.cpp">
+      <Filter>Solids</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryData.h" />
     <ClInclude Include="OpenGlErrorHandling.h" />
-    <ClInclude Include="PrimitiveGeneration.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="Particle.h">
       <Filter>Particles</Filter>
     </ClInclude>
@@ -65,6 +66,12 @@
     <ClInclude Include="ParticleStorage.h">
       <Filter>Particles</Filter>
     </ClInclude>
+    <ClInclude Include="PrimitiveGeneration.h">
+      <Filter>Solids</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryData.h">
+      <Filter>Solids</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderGeometry.frag" />
@@ -76,6 +83,9 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{888165dd-9b93-4108-b23e-0c57b4ac9561}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solids">
+      <UniqueIdentifier>{aa0066f0-392d-42dd-8fb8-7e1251c17712}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

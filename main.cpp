@@ -45,6 +45,7 @@
 #include "ParticleRegionCircle.h"
 #include "ParticleRegionPolygon.h"
 #include "ParticleEmitterPoint.h"
+#include "ParticleEmitterBar.h"
 #include "ParticleStorage.h"
 #include "ParticleUpdater.h"
 
@@ -69,7 +70,8 @@ IParticleRegion *gpParticleRegion;
 IParticleEmitter *gpParticleEmitter;
 ParticleUpdater gParticleUpdater;
 ParticleStorage gParticleStorage;
-const unsigned int MAX_PARTICLE_COUNT = 1000;
+const unsigned int MAX_PARTICLE_COUNT = 10000; // a bit slow on my machine
+//const unsigned int MAX_PARTICLE_COUNT = 1000; // decently fast on my machine
 
 /*-----------------------------------------------------------------------------------------------
 Description:
@@ -113,13 +115,17 @@ void Init()
     // make a point emitter at the center of a circular region of the same location and size as 
     // the circle primitive (currently (7-4-2016) hard-coded as 0.25 radius)
 
-    //gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.3f, +0.3f), 0.5f);
-    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.3f, +0.3f), 0.1f, 0.5f);
-    gpParticleRegion = new ParticleRegionPolygon(false, polygonCorners[0], polygonCorners[1], polygonCorners[2], polygonCorners[3]);
-    gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
+    gpParticleRegion = new ParticleRegionCircle(glm::vec2(+0.0f, +0.0f), 0.5f);
+    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
+    //gpParticleRegion = new ParticleRegionPolygon(polygonCorners);
+    //gpParticleEmitter = new ParticleEmitterPoint(glm::vec2(+0.0f, +0.0f), 0.1f, 0.5f);
+    gpParticleEmitter = new ParticleEmitterBar(glm::vec2(-0.2f, -0.25f), glm::vec2(-0.2, +0.25f), 0.1f, 0.5f);
+
+
+
     gParticleStorage.Init(gProgramId, MAX_PARTICLE_COUNT);
     gParticleUpdater.SetRegion(gpParticleRegion);
-    gParticleUpdater.SetEmitter(gpParticleEmitter, 5);
+    gParticleUpdater.SetEmitter(gpParticleEmitter, 10);
 
     // start all particles at the emitter's orign
     for (size_t particleCount = 0; particleCount < MAX_PARTICLE_COUNT; particleCount++)
@@ -149,7 +155,6 @@ void Display()
     glm::mat4 translateMatrix;
 
     gParticleUpdater.Update(gParticleStorage._allParticles, 0.01f);
-
 
     glUseProgram(gProgramId);
 

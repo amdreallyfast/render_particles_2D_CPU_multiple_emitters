@@ -1,29 +1,64 @@
 #include "ParticleUpdater.h"
 
-//class ParticleUpdater
-
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Ensures that the object starts object with initialized values.
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-4-2016)
+-----------------------------------------------------------------------------------------------*/
 ParticleUpdater::ParticleUpdater() :
     _pRegion(0),
     _pEmitter(0)
 {
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    A simple assignment. 
+Parameters: 
+    pRegion     A pointer to a "particle region" interface.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-4-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleUpdater::SetRegion(const IParticleRegion *pRegion)
 {
     _pRegion = pRegion;
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    A simple assignment.
+Parameters: 
+    pEmitter    A pointer to a "particle emitter" interface.
+    maxParticlesEmittedPerFrame     A restriction on the provided emitter to prevent all 
+        particles from being emitted at once.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-4-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleUpdater::SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame)
 {
     _pEmitter = pEmitter;
     _maxParticlesEmittedPerFrame = maxParticlesEmittedPerFrame;
 }
 
-// TODO: header
-void ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Checks if each particle is out of bounds, and if so, tells the emitter to reset it.  If the 
+    emitter hasn't reached its quota for emitted particles, then the particle is sent back out 
+    again.  Lastly, if the particle is active, then its position is updated with its velocity and
+    the provided delta time.
+Parameters:
+    particleCollection  The particle collection that will be updated.
+    deltatimeSec        Self-explanatory
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-4-2016)
+-----------------------------------------------------------------------------------------------*/
+void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
     const float deltaTimeSec) const
 {
     // TODO: ??some kind of std::remove_if(...) algorithm? for each item, if not good, then swap with last item and reduce final index by 1??
@@ -47,10 +82,13 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
             _pEmitter->ResetParticle(&(particleCollection[particleIndex]));
         }
 
+        // TODO: ?a way to make these conditions into assignments to avoid the pipeline thrashing? perhaps take advantage of "is active" being an integer??
+
         // if vs else-if()? eh
         if (!particleRef._isActive && emitCounter < _maxParticlesEmittedPerFrame)
         {
             particleRef._isActive = true;
+            emitCounter++;
         }
 
         if (particleRef._isActive)

@@ -2,7 +2,18 @@
 
 #include "RandomToast.h"
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Ensures that the object starts object with initialized values.
+Parameters:
+    p1      The bar's origin point in window space (XY on range [-1,+1]).
+    p2      The bar's end point.
+    minVel      The minimum velocity for particles being emitted.
+    maxVel      The maximum emission velocity.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 ParticleEmitterBar::ParticleEmitterBar(const glm::vec2 &p1, const glm::vec2 &p2, const float minVel,
     const float maxVel)
 {
@@ -16,7 +27,19 @@ ParticleEmitterBar::ParticleEmitterBar(const glm::vec2 &p1, const glm::vec2 &p2,
     _velocityCalculator.SetDir(plus90Degrees);
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Sets the given particle's starting position and velocity.  The position is set to a random 
+    point along the var.
+    
+    Does NOT alter the "is active" flag.  That flag is altered only by the "particle updater" 
+    object.
+Parameters:
+resetThis   Self-explanatory.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (7-2-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleEmitterBar::ResetParticle(Particle *resetThis) const
 {
     //??when to turn it on??
