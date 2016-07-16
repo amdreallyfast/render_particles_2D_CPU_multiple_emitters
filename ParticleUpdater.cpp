@@ -53,15 +53,19 @@ Description:
     the provided delta time.
 Parameters:
     particleCollection  The particle collection that will be updated.
+    startIndex          Used in case the user wanted to adapat the updater to use multiple 
+                        emitters and then wanted to split the number of particles between these 
+                        emitters.
+    numToUpdate         Same idea as "start index".
     deltatimeSec        Self-explanatory
 Returns:    None
 Exception:  Safe
 Creator:    John Cox (7-4-2016)
 -----------------------------------------------------------------------------------------------*/
-void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
-    const float deltaTimeSec) const
+void ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
+    const unsigned int startIndex, const unsigned int numToUpdate, const float deltaTimeSec) const
 {
-    // TODO: ??some kind of std::remove_if(...) algorithm? for each item, if not good, then swap with last item and reduce final index by 1??
+    // ??throw a fit is endIndex >= particle collection size??
 
     // for all particles:
     // - if it has gone out of bounds, reset it and deactivate it
@@ -73,8 +77,10 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
     // I did the former, but it doesn't really matter which approach is chosen.
 
     int emitCounter = 0;
-    for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
+    //for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
+    for (size_t particleIndex = startIndex; particleIndex < numToUpdate; particleIndex++)
     {
+
         Particle &particleRef = particleCollection[particleIndex];
         if (_pRegion->OutOfBounds(particleRef))
         {

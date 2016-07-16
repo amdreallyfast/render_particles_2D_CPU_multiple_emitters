@@ -157,6 +157,7 @@
     <ClCompile Include="ParticleUpdater.cpp" />
     <ClCompile Include="PrimitiveGeneration.cpp" />
     <ClCompile Include="RandomToast.cpp" />
+    <ClCompile Include="ShaderStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderParticle.frag" />

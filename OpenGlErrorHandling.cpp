@@ -7,8 +7,8 @@
 Description:
     Rather than calling glGetError(...) every time I make an OpenGL call, I register this
     function as the debug callback.  If an error or any OpenGL message in general pops up, this
-    prints it to the console.  I can turn it on and off by enabling and disabling the
-    "#define DEBUG" statement in main(...).
+    prints it to stderr.  I can turn it on and off by enabling and disabling the "#define DEBUG" 
+    statement in main(...).
 Parameters:
     Unknown.  The function pointer is provided to glDebugMessageCallbackARB(...), and that
     function is responsible for calling this one as it sees fit.
@@ -57,10 +57,11 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
         typeSeverity = "UNKNOWN SEVERITY";
         break;
     }
-
-    printf("DebugFunc: length = '%d', id = '%u', userParam = '%x'\n", length, id, (unsigned int)userParam);
-    printf("%s from %s,\t%s priority\nMessage: %s\n",
+    
+    fprintf(stderr, "DebugFunc: length = '%d', id = '%u', userParam = '%x'\n", length, id, (unsigned int)userParam);
+    fprintf(stderr, "%s from %s,\t%s priority\nMessage: %s\n",
         errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message);
+    fprintf(stderr, "\n");  // separate this error from the next thing that prints
 }
 
 //

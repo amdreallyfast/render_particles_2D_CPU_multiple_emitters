@@ -30,6 +30,11 @@
     <ClCompile Include="GeometryData.cpp">
       <Filter>Solids</Filter>
     </ClCompile>
+    <ClCompile Include="MinMaxVelocity.cpp" />
+    <ClCompile Include="RandomToast.cpp" />
+    <ClCompile Include="ShaderStorage.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGlErrorHandling.h" />
@@ -72,10 +77,14 @@
     <ClInclude Include="GeometryData.h">
       <Filter>Solids</Filter>
     </ClInclude>
+    <ClInclude Include="MinMaxVelocity.h" />
+    <ClInclude Include="RandomToast.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderGeometry.frag" />
     <None Include="shaderGeometry.vert" />
+    <None Include="shaderParticle.frag" />
+    <None Include="shaderParticle.vert" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Particles">

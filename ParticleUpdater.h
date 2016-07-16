@@ -20,11 +20,10 @@ public:
     ParticleUpdater();
     
     void SetRegion(const IParticleRegion *pRegion);
-
-    // TODO: multiple emitters
     void SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame);
 
-    void Update(std::vector<Particle> &particleCollection, const float deltaTimeSec) const;
+    void Update(std::vector<Particle> &particleCollection, const unsigned int startIndex, 
+        const unsigned int numToUpdate, const float deltaTimeSec) const;
 
 private:
     // the form "const something *" means that it is a pointer to a const something, so the 
