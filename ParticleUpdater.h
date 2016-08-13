@@ -20,10 +20,12 @@ public:
     ParticleUpdater();
     
     void SetRegion(const IParticleRegion *pRegion);
-    void SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame);
+    void AddEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame);
+    // no "remove emitter" method because this is just a demo
 
     void Update(std::vector<Particle> &particleCollection, const unsigned int startIndex, 
         const unsigned int numToUpdate, const float deltaTimeSec) const;
+    void ResetAllParticles(std::vector<Particle> &particleCollection);
 
 private:
     // the form "const something *" means that it is a pointer to a const something, so the 
@@ -31,8 +33,10 @@ private:
     // can't be altered
 
     const IParticleRegion *_pRegion;
-    const IParticleEmitter *_pEmitter;
-    
-    // TODO: when using multiple emitters, associate one of these with each emitter
-    int _maxParticlesEmittedPerFrame;
+
+    // use arrays instead of std::vector<...> for the sake of cache coherency
+    unsigned int _emitterCount;
+    static const int MAX_EMITTERS = 5;
+    const IParticleEmitter *_pEmitters[MAX_EMITTERS];
+    unsigned int _maxParticlesEmittedPerFrame[MAX_EMITTERS];
 };

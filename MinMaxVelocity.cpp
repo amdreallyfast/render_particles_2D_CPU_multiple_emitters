@@ -72,7 +72,9 @@ Description:
     (or 0 if nothing was set after this object was instatiated) and in the provided direction 
     (or a random direction if no direction was set).
 Parameters: None
-Returns:    None
+Returns:    
+    A 2D vector whose magnitude is between the initialized "min" and "max" values and whose 
+    direction is random.
 Exception:  Safe
 Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/

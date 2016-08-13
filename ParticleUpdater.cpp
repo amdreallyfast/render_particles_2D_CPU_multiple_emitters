@@ -9,9 +9,14 @@ Exception:  Safe
 Creator:    John Cox (7-4-2016)
 -----------------------------------------------------------------------------------------------*/
 ParticleUpdater::ParticleUpdater() :
-    _pRegion(0),
-    _pEmitter(0)
+    _pRegion(0)
 {
+    for (size_t emitterIndex = 0; emitterIndex < MAX_EMITTERS; emitterIndex++)
+    {
+        _pEmitters[emitterIndex] = 0;
+        _maxParticlesEmittedPerFrame[emitterIndex] = 0;
+    }
+    _emitterCount = 0;
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -39,10 +44,16 @@ Returns:    None
 Exception:  Safe
 Creator:    John Cox (7-4-2016)
 -----------------------------------------------------------------------------------------------*/
-void ParticleUpdater::SetEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame)
+void ParticleUpdater::AddEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame)
 {
-    _pEmitter = pEmitter;
-    _maxParticlesEmittedPerFrame = maxParticlesEmittedPerFrame;
+    if (_emitterCount >= MAX_EMITTERS)
+    {
+        return;
+    }
+
+    _pEmitters[_emitterCount] = pEmitter;
+    _maxParticlesEmittedPerFrame[_emitterCount] = maxParticlesEmittedPerFrame;
+    _emitterCount++;
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -53,7 +64,7 @@ Description:
     the provided delta time.
 Parameters:
     particleCollection  The particle collection that will be updated.
-    startIndex          Used in case the user wanted to adapat the updater to use multiple 
+    startIndex          Used in case the user wanted to adapt the updater to use multiple 
                         emitters and then wanted to split the number of particles between these 
                         emitters.
     numToUpdate         Same idea as "start index".
@@ -65,7 +76,10 @@ Creator:    John Cox (7-4-2016)
 void ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
     const unsigned int startIndex, const unsigned int numToUpdate, const float deltaTimeSec) const
 {
-    // ??throw a fit is endIndex >= particle collection size??
+    if (_emitterCount == 0 || _pRegion == 0)
+    {
+        return;
+    }
 
     // for all particles:
     // - if it has gone out of bounds, reset it and deactivate it
@@ -76,34 +90,74 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
     // else-if() statements are used, then only one of those situations will be run per frame.  
     // I did the former, but it doesn't really matter which approach is chosen.
 
-    int emitCounter = 0;
-    //for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
-    for (size_t particleIndex = startIndex; particleIndex < numToUpdate; particleIndex++)
+    // simply called "end" because I want to keep using the "< end" notation on the loop end 
+    // condition
+    unsigned int end = startIndex + numToUpdate;
+    if (end > particleCollection.size())
     {
+        // if "end" was already == particle collection size, then all is good
+        end = particleCollection.size();
+    }
 
-        Particle &particleRef = particleCollection[particleIndex];
-        if (_pRegion->OutOfBounds(particleRef))
+    // when using multiple emitters, it looks best to cycle between all emitters one by one, but that is also more difficult to deal with and requires a number of different checks and conditions, and provided the total number of particles to update exceeds the total number of max particles emitted per frame across all emitters, then it will look just as good to "fill up" each emitter one by one, and that is much easier to implement
+    unsigned int particleEmitCounter = 0;
+    int emitterIndex = 0;
+
+    //for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
+    for (size_t particleIndex = startIndex; particleIndex < end; particleIndex++)
+    {
+        Particle &pCopy = particleCollection[particleIndex];
+        if (_pRegion->OutOfBounds(pCopy))
         {
-            particleRef._isActive = false;
-            Particle pCopy = (particleCollection[particleIndex]);
-            _pEmitter->ResetParticle(&pCopy);
+            pCopy._isActive = false;
+        }
+
+        if (pCopy._isActive)
+        {
+            pCopy._position = pCopy._position + (pCopy._velocity * deltaTimeSec);
+        }
+        else if (emitterIndex < MAX_EMITTERS)   // also implicitly, "is active" is false
+        {
+            // if all emitters have put out all they can this frame, then this condition will 
+            // not be entered
+            _pEmitters[emitterIndex]->ResetParticle(&pCopy);
+            pCopy._isActive = true;
             particleCollection[particleIndex] = pCopy;
-        }
 
-        // TODO: ?a way to make these conditions into assignments to avoid the pipeline thrashing? perhaps take advantage of "is active" being an integer??
-
-        // if vs else-if()? eh
-        if (!particleRef._isActive && emitCounter < _maxParticlesEmittedPerFrame)
-        {
-            particleRef._isActive = true;
-            emitCounter++;
-        }
-
-        if (particleRef._isActive)
-        {
-            particleRef._position = particleRef._position + 
-                (particleRef._velocity * deltaTimeSec);
+            particleEmitCounter++;
+            if (particleEmitCounter >= _maxParticlesEmittedPerFrame[emitterIndex])
+            {
+                // get the next emitter
+                // Note: This is in a while loop because the number of emitters in this particle updater are unknown and some of the pointers in the emitter array may still be 0, so this has to loop through (potentially) all of them.
+                emitterIndex++;
+                while (emitterIndex < MAX_EMITTERS)
+                {
+                    if (_pEmitters[emitterIndex] != 0)
+                    {
+                        // got another one, so start the particle emission counter over again
+                        particleEmitCounter = 0;
+                        break;
+                    }
+                    emitterIndex++;
+                }
+            }
         }
     }
+}
+
+void ParticleUpdater::ResetAllParticles(std::vector<Particle> &particleCollection)
+{
+    // reset all particles evenly 
+    // Note: I could do a weighted fancy algorithm and account for the "particles emitted per frame" for each emitter, but this is just a demo program.
+    // Also Note: This integer division could leave a few particles unaffected, but those will quickly be swept up into the flow of things when "update" runs.
+    unsigned int particlesPerEmitter = particleCollection.size() / _emitterCount;
+    for (size_t emitterIndex = 0; emitterIndex < _emitterCount; emitterIndex++)
+    {
+        for (size_t particleIndex = 0; particleIndex < particlesPerEmitter; particleIndex++)
+        {
+            _pEmitters[emitterIndex]->ResetParticle(&particleCollection[particleIndex]);
+        }
+    }
+
 }
 

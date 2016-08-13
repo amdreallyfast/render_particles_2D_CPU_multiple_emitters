@@ -19,6 +19,5 @@ public:
     virtual void ResetParticle(Particle *resetThis) const;
 private:
     glm::vec2 _position;
-    float _radius;
     MinMaxVelocity _velocityCalculator;
 };

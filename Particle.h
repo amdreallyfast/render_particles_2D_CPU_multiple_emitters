@@ -12,6 +12,12 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 struct Particle
 {
+    Particle() : 
+        // glm structures already have "set to 0" constructors
+        _isActive(0)
+    {
+    }
+
     glm::vec2 _position;
     glm::vec2 _velocity;
 

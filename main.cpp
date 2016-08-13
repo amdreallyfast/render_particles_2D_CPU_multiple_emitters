@@ -103,7 +103,7 @@ void CreateCircularParticleThing(const glm::mat4 &translateMatrix, const GLuint 
     gCircleTranslateMatrix = glm::translate(glm::mat4(), glm::vec3(+0.3f, +0.3f, 0.0f));
     circleCenter = gCircleTranslateMatrix * circleCenter;
     gpParticleRegionCircle = new ParticleRegionCircle(
-        glm::vec2(circleCenter.x, circleCenter.y), 0.25f);
+        glm::vec2(circleCenter.x, circleCenter.y), 0.5f);
 
     // stick the emitter bar on the left side of the circle, have it emit right, and make the 
     // particles slow compared to the point emitter 
@@ -188,8 +188,11 @@ void Init()
     gCircleTranslateMatrix = glm::translate(glm::mat4(), glm::vec3(+0.3f, +0.3f, 0.0f));
     CreateCircularParticleThing(gCircleTranslateMatrix, particleProgramId);
 
-    gPolygonTranslateMatrix = glm::translate(glm::mat4(), glm::vec3(-0.3f, -0.3f, 0.0f));
+    //gPolygonTranslateMatrix = glm::translate(glm::mat4(), glm::vec3(-0.3f, -0.3f, 0.0f));
+    gPolygonTranslateMatrix = glm::translate(glm::mat4(), glm::vec3(+0.3f, +0.3f, 0.0f));
     CreatePolygonParticleThing(gPolygonTranslateMatrix, particleProgramId);
+    delete gpParticleEmitterForPolygon;
+    gpParticleEmitterForPolygon = new ParticleEmitterPoint(glm::vec2(0.3f, 0.3f), 0.3f, 0.5f);
 
     //// make a circle and a bar particle emitter inside it
     //// - circle geometry for drawing a circle
@@ -242,13 +245,15 @@ void Init()
 
     gParticleStorage.Init(particleProgramId, MAX_PARTICLE_COUNT);
     gParticleUpdaterForCircle.SetRegion(gpParticleRegionCircle);
-    gParticleUpdaterForCircle.SetEmitter(gpParticleEmitterForCircle, 10);
+    gParticleUpdaterForCircle.AddEmitter(gpParticleEmitterForCircle, 10);
+    gParticleUpdaterForCircle.AddEmitter(gpParticleEmitterForPolygon, 10);
 
-    // start all particles at the emitter's orign
-    for (size_t particleCount = 0; particleCount < MAX_PARTICLE_COUNT; particleCount++)
-    {
-        gpParticleEmitterForCircle->ResetParticle(&(gParticleStorage._allParticles[particleCount]));
-    }
+    gParticleUpdaterForCircle.ResetAllParticles(gParticleStorage._allParticles);
+    //// start all particles at the emitter's orign
+    //for (size_t particleCount = 0; particleCount < MAX_PARTICLE_COUNT; particleCount++)
+    //{
+    //    gpParticleEmitterForCircle->ResetParticle(&(gParticleStorage._allParticles[particleCount]));
+    //}
 }
 
 /*-----------------------------------------------------------------------------------------------
