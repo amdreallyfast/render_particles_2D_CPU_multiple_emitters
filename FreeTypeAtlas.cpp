@@ -30,6 +30,19 @@ struct point {
     GLfloat t;
 };
 
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Initializes members to default values.  In this demo program, these are handled by a 
+    FreeTypeEncapsulate object.
+Parameters:
+    uniformTextSamplerLoc   The location of the texture sampler variable in the FreeType shader 
+                            program.
+    uniformTextColorLoc     The location of the color sampler variable in the FreeType shader 
+                            program.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (4-2016)
+-----------------------------------------------------------------------------------------------*/
 FreeTypeAtlas::FreeTypeAtlas(const int uniformTextSamplerLoc, const int uniformTextColorLoc) :
     _uniformTextSamplerLoc(uniformTextSamplerLoc),
     _uniformTextColorLoc(uniformTextColorLoc)
@@ -38,7 +51,38 @@ FreeTypeAtlas::FreeTypeAtlas(const int uniformTextSamplerLoc, const int uniformT
     memset(_glyphCharInfo, 0, sizeof(_glyphCharInfo));
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    This class generates and stores its own texture and vertex buffer, so it is responsible for 
+    cleaning them up when it is done.
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (4-2016)
+-----------------------------------------------------------------------------------------------*/
+FreeTypeAtlas::~FreeTypeAtlas()
+{
+    glDeleteTextures(1, &_textureId);
+    glDeleteBuffers(1, &_vboId);
+}
+
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Creates the texture (the "atlas") for the font's typeface, fills it in, then creates the 
+    vertex buffer storage and its associated vertex array object for the quads that will be the 
+    surface on which glyph textures will draw.
+Parameters:
+    FT_Face                 A typedef for a pointer (gah).  From the declaration for it: "A 
+                            handle to a given typographic face object.  A face object models a 
+                            given typeface, in a given style."  Provided by FreetypeEncapsulate.
+    fontPixelHeightSize     Determines the size of the glyph bitmaps.  Necessary to allocate the 
+                            proper number of bytes on the GPU.
+Returns:
+    True if all went well, otherwise false.  At this time (8-20-2016), there is no way for it 
+    return false.
+Exception:  Safe
+Creator:    John Cox (4-2016)
+-----------------------------------------------------------------------------------------------*/
 bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
 {
     // configure the font's size
@@ -364,13 +408,27 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     return true;
 }
 
-FreeTypeAtlas::~FreeTypeAtlas()
-{
-    glDeleteTextures(1, &_textureId);
-    glDeleteBuffers(1, &_vboId);
-}
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Draws the provided string to the screen with the other arguments dictating details.
 
-// TODO: header
+    The FreeType shader program MUST be bound before calling.  It is not this class' 
+    responsibility to keep track of the shader program.  That is the responsibility of 
+    ShaderStorage.
+Parameters: 
+    str             Self-explanatory.
+    posScreenCoord  A 2-float array for the position of the bottom left corner of the first 
+                    character in the string.  Values are in screen coordinates (X and Y on the 
+                    range [-1,+1].
+                    Note: The screen coordinates do not exactly include 1, so to draw in the lower left corner, for example, specify [-0.999f, -0.999f].
+    userScale       Font size is dictated in the atlas' initialization, but the textures 
+                    themselves can be scaled up.  This may make a more pixelated image, but it 
+                    can be a speedy alternative to making a new atlas.
+    color           A 4-float array with the order RGBA.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (4-2016)
+-----------------------------------------------------------------------------------------------*/
 void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoord[2],
     const float userScale[2], const float color[4]) const
 {

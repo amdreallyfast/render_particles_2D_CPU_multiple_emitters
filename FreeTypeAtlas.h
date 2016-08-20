@@ -7,22 +7,26 @@
 
 #include <string>
 
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Once initialized, it will store everything necessary to render the text of a TrueType font.  
+    This should not be accessed directly except for the RenderText(...) function, and even that 
+    should be accessed through FreeTypeEncapsulated (may need a better name), which is 
+    responsible for storing atlases that are attributed to a specific font size.
+Creator:    John Cox (4-2016)
+-----------------------------------------------------------------------------------------------*/
 class FreeTypeAtlas
 {
 public:
-    // the FT_Face type is a pointer, so don't use a reference or pointer
     FreeTypeAtlas(const int uniformTextSamplerLoc, const int uniformTextColorLoc);
+    ~FreeTypeAtlas();
 
     bool Init(const FT_Face face, const int fontPixelHeightSize);
 
     // TODO: check if different font sizes results in different bitmaps
     //void CheckDifferentFontSize();
+    // TODO: does a large font size become pixelated? what about a large user scale? do they effectively do the same thing?
 
-    ~FreeTypeAtlas();
-
-    // position is in screen coordinates of the OpenGL display, which on the range 
-    // [-0.999f, +0.999f], and note that the range is technically [-1,+1] but in practice an X
-    // of -1 will not render
     void RenderText(const std::string &str, const float posScreenCoord[2],
         const float userScale[2], const float color[4]) const;
 private:
