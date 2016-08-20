@@ -88,6 +88,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\freetype-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FreeTypeAtlas.cpp" />
+    <ClCompile Include="FreeTypeEncapsulated.cpp" />
     <ClCompile Include="GenerateShader.cpp" />
     <ClCompile Include="GeometryData.cpp" />
     <ClCompile Include="main.cpp" />
@@ -160,12 +163,16 @@
     <ClCompile Include="ShaderStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaderTrueType.frag" />
+    <None Include="shaderTrueType.vert" />
     <None Include="shaderParticle.frag" />
     <None Include="shaderParticle.vert" />
     <None Include="shaderGeometry.frag" />
     <None Include="shaderGeometry.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FreeTypeAtlas.h" />
+    <ClInclude Include="FreeTypeEncapsulated.h" />
     <ClInclude Include="GenerateShader.h" />
     <ClInclude Include="GeometryData.h" />
     <ClInclude Include="IParticleEmitter.h" />

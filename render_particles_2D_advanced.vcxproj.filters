@@ -35,6 +35,12 @@
     <ClCompile Include="ShaderStorage.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="FreeTypeAtlas.cpp">
+      <Filter>RenderText</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeTypeEncapsulated.cpp">
+      <Filter>RenderText</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGlErrorHandling.h" />
@@ -79,12 +85,20 @@
     </ClInclude>
     <ClInclude Include="MinMaxVelocity.h" />
     <ClInclude Include="RandomToast.h" />
+    <ClInclude Include="FreeTypeAtlas.h">
+      <Filter>RenderText</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeTypeEncapsulated.h">
+      <Filter>RenderText</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderGeometry.frag" />
     <None Include="shaderGeometry.vert" />
     <None Include="shaderParticle.frag" />
     <None Include="shaderParticle.vert" />
+    <None Include="shaderTrueType.frag" />
+    <None Include="shaderTrueType.vert" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Particles">
@@ -95,6 +109,9 @@
     </Filter>
     <Filter Include="Solids">
       <UniqueIdentifier>{aa0066f0-392d-42dd-8fb8-7e1251c17712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderText">
+      <UniqueIdentifier>{2e6cc6b5-9657-45b5-bcf9-ec3208c12d32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

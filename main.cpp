@@ -30,6 +30,9 @@
 #pragma comment(lib, "winmm.lib")               // Windows-specific; freeglut needs it
 #endif
 
+// apparently the FreeType lib also needs a companion file, "freetype261d.pdb"
+#pragma comment (lib, "freetype-2.6.1/objs/vc2010/Win32/freetype261d.lib")
+
 // for printf(...)
 #include <stdio.h>
 
@@ -54,10 +57,11 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-// in a bigger program, ??where would this be stored??
-ShaderStorage gShaderStorage;
-// in a bigger program, this would be stored in some kind of shader storage
-//GLuint gProgramId;
+// for the frame rate counter
+#include "FreeTypeEncapsulated.h"
+
+FreeTypeEncapsulated gTextAtlases;
+std::string gTextShaderKey;
 
 // in a bigger program, uniform locations would probably be stored in the same place as the 
 // shader programs
@@ -176,12 +180,15 @@ void Init()
     glDepthFunc(GL_LEQUAL);
     glDepthRange(0.0f, 1.0f);
 
+    gTextShaderKey = gTextAtlases.Init("FreeSans.ttf", "shaderTrueType.vert", "shaderTrueType.frag");
+
     //gProgramId = GenerateShaderProgram();
-    gShaderStorage.NewShader("particles");
-    gShaderStorage.AddShaderFile("particles", "shaderParticle.vert", GL_VERTEX_SHADER);
-    gShaderStorage.AddShaderFile("particles", "shaderParticle.frag", GL_FRAGMENT_SHADER);
-    gShaderStorage.LinkShader("particles");
-    GLuint particleProgramId = gShaderStorage.GetShaderProgram("particles");
+    ShaderStorage &shaderStorageRef = ShaderStorage::GetInstance();
+    shaderStorageRef.NewShader("particles");
+    shaderStorageRef.AddShaderFile("particles", "shaderParticle.vert", GL_VERTEX_SHADER);
+    shaderStorageRef.AddShaderFile("particles", "shaderParticle.frag", GL_FRAGMENT_SHADER);
+    shaderStorageRef.LinkShader("particles");
+    GLuint particleProgramId = shaderStorageRef.GetShaderProgram("particles");
 
     //gUnifMatrixTransform = glGetUniformLocation(gProgramId, "translateMatrixWindowSpace");
 
@@ -279,8 +286,18 @@ void Display()
     gParticleUpdaterForCircle.Update(gParticleStorage._allParticles, 0, 
         gParticleStorage._allParticles.size(), 0.01f);
 
-    GLuint particleProgramId = gShaderStorage.GetShaderProgram("particles");
-    glUseProgram(particleProgramId);
+    glUseProgram(ShaderStorage::GetInstance().GetShaderProgram("particles"));
+
+    // render frame rate
+    GLfloat color[4] = { 0.5f, 0.5f, 0.0f, 1.0f };
+    char str[8];
+    //sprintf(str, "%.2lf", frameRate);
+    sprintf(str, "%.2lf", 1.56f);
+    float xy[2] = { -0.99f, -0.99f };
+    float scaleXY[2] = { 1.0f, 1.0f };
+    // the first time that this getter runs, it will load the atlas
+    glUseProgram(ShaderStorage::GetInstance().GetShaderProgram(gTextShaderKey));
+    gTextAtlases.GetAtlas(48)->RenderText(str, xy, scaleXY, color);
 
     //static unsigned int frameCounter = 0;
     //frameCounter++;
@@ -431,8 +448,6 @@ Creator:    John Cox (2-13-2016)
 -----------------------------------------------------------------------------------------------*/
 void CleanupAll()
 {
-    gShaderStorage.DeleteProgram("particles");
-
     // these deletion functions need the buffer ID, but they take a (void *) for the second 
     // argument in the event that the user has an array of IDs (legacy OpenGL stuff that isn't 
     // used much anymore, if at all), so pass in the buffer ID's address and tell it to delete 1

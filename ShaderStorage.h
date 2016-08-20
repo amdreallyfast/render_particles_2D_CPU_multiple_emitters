@@ -19,7 +19,8 @@ Creator:    John Cox (7-4-2016)
 class ShaderStorage
 {
 public:
-    ShaderStorage();
+    static ShaderStorage &GetInstance();
+
     ~ShaderStorage();
     void NewShader(const std::string &programKey);
     void DeleteProgram(const std::string &programKey);
@@ -34,6 +35,11 @@ public:
         const std::string &attributeName) const;
 
 private:
+    // defined privately to enforce singleton-ness
+    ShaderStorage();
+    ShaderStorage(const ShaderStorage&) {}
+    ShaderStorage &operator=(const ShaderStorage&) {}
+
     typedef std::map<std::string, GLuint> _PROGRAM_MAP;
     _PROGRAM_MAP _compiledPrograms;
 

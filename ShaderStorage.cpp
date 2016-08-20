@@ -11,6 +11,20 @@
 
 /*-----------------------------------------------------------------------------------------------
 Description:
+    It's a getter for a singleton...and...that's it.
+Parameters: None
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (8-20-2016)
+-----------------------------------------------------------------------------------------------*/
+ShaderStorage &ShaderStorage::GetInstance()
+{
+    static ShaderStorage instance;
+    return instance;
+}
+
+/*-----------------------------------------------------------------------------------------------
+Description:
     Ensures that the object starts object with initialized values.
 Parameters: None
 Returns:    None
@@ -88,7 +102,8 @@ void ShaderStorage::NewShader(const std::string &programKey)
 
 /*-----------------------------------------------------------------------------------------------
 Description:
-    Cleanup method.  If not called, everything will be cleaned up properly in the destructor.
+    Manual cleanup method.  If not called, everything will be cleaned up properly in the 
+    destructor.
     
     Prints errors to stderr.
 Parameters:
