@@ -59,6 +59,9 @@
 
 // for the frame rate counter
 #include "FreeTypeEncapsulated.h"
+#include "Stopwatch.h"
+
+Stopwatch gTimer;
 
 FreeTypeEncapsulated gTextAtlases;
 std::string gTextShaderKey;
@@ -80,6 +83,11 @@ glm::mat4 gPolygonTranslateMatrix;
 // in a bigger program, ??where would particle stuff be stored??
 // Note: I made the updater only use one region and one emitter.  I suggest that there only ever
 // be 1 region per updater, but my code can be adapted to use multiple emitters.
+//IParticleRegion *gpParticleRegionCircle;
+//IParticleRegion *gpParticleRegionPolygon;
+//IParticleEmitter *gpParticleEmitterCircle;
+//IParticleEmitter *gpParticleEmitterBar;
+//ParticleUpdater gParticleUpdater;
 IParticleRegion *gpParticleRegionCircle;
 IParticleEmitter *gpParticleEmitterForCircle;
 ParticleUpdater gParticleUpdaterForCircle;
@@ -261,6 +269,10 @@ void Init()
     //{
     //    gpParticleEmitterForCircle->ResetParticle(&(gParticleStorage._allParticles[particleCount]));
     //}
+
+    // the timer will be used for framerate calculations
+    gTimer.Init();
+    gTimer.Start();
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -287,17 +299,6 @@ void Display()
         gParticleStorage._allParticles.size(), 0.01f);
 
     glUseProgram(ShaderStorage::GetInstance().GetShaderProgram("particles"));
-
-    // render frame rate
-    GLfloat color[4] = { 0.5f, 0.5f, 0.0f, 1.0f };
-    char str[8];
-    //sprintf(str, "%.2lf", frameRate);
-    sprintf(str, "%.2lf", 1.56f);
-    float xy[2] = { -0.99f, -0.99f };
-    float scaleXY[2] = { 1.0f, 1.0f };
-    // the first time that this getter runs, it will load the atlas
-    glUseProgram(ShaderStorage::GetInstance().GetShaderProgram(gTextShaderKey));
-    gTextAtlases.GetAtlas(48)->RenderText(str, xy, scaleXY, color);
 
     //static unsigned int frameCounter = 0;
     //frameCounter++;
@@ -328,6 +329,31 @@ void Display()
 
 
     // TODO: remove everything from this project that has to do with textures; they aren't used in this demo
+
+
+    // render frame rate once per second in the lower left corner
+    // Note: The font textures' orgin is their lower left corner, so the "lower left" in screen 
+    // space is just above [-1.0f, -1.0f].
+    GLfloat color[4] = { 0.5f, 0.5f, 0.0f, 1.0f };
+    char str[8];
+    static int elapsedFramesPerSecond = 0;
+    static double elapsedTime = 0.0;
+    static double frameRate = 0.0;
+    elapsedFramesPerSecond++;
+    elapsedTime += gTimer.Lap();
+    if (elapsedTime > 1.0)
+    {
+        frameRate = (double)elapsedFramesPerSecond / elapsedTime;
+        elapsedFramesPerSecond = 0;
+        elapsedTime -= 1.0f;
+    }
+    sprintf(str, "%.2lf", frameRate);
+    float xy[2] = { -0.99f, -0.99f };
+    float scaleXY[2] = { 1.0f, 1.0f };
+
+    // the first time that "get shader program" runs, it will load the atlas
+    glUseProgram(ShaderStorage::GetInstance().GetShaderProgram(gTextShaderKey));
+    gTextAtlases.GetAtlas(48)->RenderText(str, xy, scaleXY, color);
 
 
 

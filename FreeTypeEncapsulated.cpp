@@ -95,6 +95,7 @@ std::string FreeTypeEncapsulated::Init(const std::string &trueTypeFontFilePath,
 //    return newAtlasPtr;
 //}
 
+// TODO: header
 const std::shared_ptr<FreeTypeAtlas> FreeTypeEncapsulated::GetAtlas(const int fontSize)
 {
     if (!_haveInitialized)

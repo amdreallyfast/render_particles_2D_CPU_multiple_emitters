@@ -161,6 +161,7 @@
     <ClCompile Include="PrimitiveGeneration.cpp" />
     <ClCompile Include="RandomToast.cpp" />
     <ClCompile Include="ShaderStorage.cpp" />
+    <ClCompile Include="Stopwatch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaderTrueType.frag" />
@@ -189,6 +190,7 @@
     <ClInclude Include="PrimitiveGeneration.h" />
     <ClInclude Include="RandomToast.h" />
     <ClInclude Include="ShaderStorage.h" />
+    <ClInclude Include="Stopwatch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

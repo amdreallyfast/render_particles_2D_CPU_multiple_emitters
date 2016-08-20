@@ -36,10 +36,13 @@
       <Filter>Shaders</Filter>
     </ClCompile>
     <ClCompile Include="FreeTypeAtlas.cpp">
-      <Filter>RenderText</Filter>
+      <Filter>RenderFrameRate</Filter>
     </ClCompile>
     <ClCompile Include="FreeTypeEncapsulated.cpp">
-      <Filter>RenderText</Filter>
+      <Filter>RenderFrameRate</Filter>
+    </ClCompile>
+    <ClCompile Include="Stopwatch.cpp">
+      <Filter>RenderFrameRate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,10 +89,13 @@
     <ClInclude Include="MinMaxVelocity.h" />
     <ClInclude Include="RandomToast.h" />
     <ClInclude Include="FreeTypeAtlas.h">
-      <Filter>RenderText</Filter>
+      <Filter>RenderFrameRate</Filter>
     </ClInclude>
     <ClInclude Include="FreeTypeEncapsulated.h">
-      <Filter>RenderText</Filter>
+      <Filter>RenderFrameRate</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.h">
+      <Filter>RenderFrameRate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -110,7 +116,7 @@
     <Filter Include="Solids">
       <UniqueIdentifier>{aa0066f0-392d-42dd-8fb8-7e1251c17712}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RenderText">
+    <Filter Include="RenderFrameRate">
       <UniqueIdentifier>{2e6cc6b5-9657-45b5-bcf9-ec3208c12d32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

@@ -38,6 +38,7 @@ FreeTypeAtlas::FreeTypeAtlas(const int uniformTextSamplerLoc, const int uniformT
     memset(_glyphCharInfo, 0, sizeof(_glyphCharInfo));
 }
 
+// TODO: header
 bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
 {
     // configure the font's size
@@ -311,7 +312,15 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     }
 
     // create the vertex buffer object (VBO) that will be used to create quads as a base for the FreeType glyph textures and store the vertex attribtues in a vertex array object (VAO)
-    // Note: MUST bind a buffer BEFORE setting vertex attribute array pointers or it WILL crash.  
+    // Note: MUST bind BEFORE setting vertex attribute array pointers or it WILL crash.  The GPU 
+    // operates on the values set in the vertex attribute pointers and not on the buffer ID.  
+    // The buffer ID is simply a way to tell OpenGL to activate a certain part of the context, 
+    // and then the following vertex attribute data tells OpenGL how the next draw call is going 
+    // to go down.  This is a GL context thing and those will only work on the currently-set 
+    // buffer.  No error is thrown if the current buffer's ID is 0 (no buffer), and that just 
+    // begs for a silent bug.  A lot of OpenGL code does not clean up the buffer bindings at the 
+    // end of the draw call (why unbind if you're just going to bind another in a moment 
+    // anyway?), and in doing so this error might be swallowed.  
     glGenVertexArrays(1, &_vaoId);
     glGenBuffers(1, &_vboId);
 
@@ -361,7 +370,7 @@ FreeTypeAtlas::~FreeTypeAtlas()
     glDeleteBuffers(1, &_vboId);
 }
 
-// see RenderChar(...) for more detail
+// TODO: header
 void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoord[2],
     const float userScale[2], const float color[4]) const
 {
@@ -404,6 +413,12 @@ void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoor
         char c = str[charIndex];
 
         // figure out where the texture needs to start drawing in screen coordinates
+        // Note: A glyph has a formal origin point that we (humans) usually think of as being where
+        // the character "starts".  But as far as OpenGL is concerned, I have a 2D rectangle of pixel
+        // data, and that's it.  If I drew that texture at the user-provided x and y, then the 
+        // character would likely look like it isn't centered.  The TrueType format provides info 
+        // that FreeType extracts so that I can figure out where to draw the texture so that it 
+        // LOOKS like the glyph ('g', c, ';', etc.) "starts" at the user-provided x and y.
         float scaledGlyphLeft = _glyphCharInfo[c].bl * oneOverScreenPixelWidth * userScale[0];
         float scaledGlyphWidth = _glyphCharInfo[c].bw * oneOverScreenPixelWidth * userScale[0];
         float scaledGlyphTop = _glyphCharInfo[c].bt * oneOverScreenPixelHeight * userScale[1];
@@ -429,6 +444,15 @@ void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoor
         // OpenGL draws triangles, but a rectangle needs to be drawn, so specify the four corners
         // of the box in such a way that GL_LINE_STRIP will draw the two triangle halves of the 
         // box
+        // Note: As long as the lines from point A to B to C to D don't cross each other (draw 
+        // it on paper), this is fine.  I am going with the pattern 
+        // bottom left -> bottom right -> top left -> top right.
+        // Also Note: Bitmap standards (and most other rectangle standards in programming, such 
+        // as for GUIs) understand the top left as the origin, and therefore the texture's pixels 
+        // are provided in a rectangle that goes from top left to bottom right.  OpenGL is the 
+        // odd one out in the world of rectangles, and it draws textures from lower left 
+        // ([S=0,T=0]) to upper right ([S=1,T=1]).  This means that the texture, from OpenGL's 
+        // perspective, is "upside down", hence "t top" being assigned to the bottom screen coordinate and "t bottom" being assigned to the top screen coordinate.  Yay for different standards.
         point box[4] = {
             { screenCoordLeft, screenCoordBottom, sLeft, tTop },
             { screenCoordRight, screenCoordBottom, sRight, tTop },
@@ -458,6 +482,12 @@ void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoor
     glBindVertexArray(_vaoId);
 
     // all that so that this one function call will work
+    // Note: Start at vertex 0 (that is, start at element 0 in the GL_ARRAY_BUFFER) and draw 
+    // 4 of them.
+    // Also Note: Due to the way that fonts work in texture atlases, only one character is 
+    // drawn at a time, which means that only 1 quad is drawn at a time.  Rather than set up 
+    // indexes and perform an element draw, just use a GL_TRIANGLE_STRIP.  That works great 
+    // for a single (and only a single) quad or for a bunch of quads stacked back to back, which is what I want when drawing text.
     glDrawArrays(GL_TRIANGLE_STRIP, 0, glyphBoxes.size());
 
     // cleanup
