@@ -6,6 +6,6 @@
 
 void GenerateTriangle(GeometryData *putDataHere);
 void GenerateBox(GeometryData *putDataHere);
-void GenerateCircle(GeometryData *putDataHere);
+void GenerateCircle(GeometryData *putDataHere, float radius, bool wireframeOnly);
 void GeneratePolygonWireframe(GeometryData *putDataHere, const std::vector<glm::vec2> &corners, 
     bool isClockwise);

@@ -24,38 +24,14 @@ FreeTypeEncapsulated::~FreeTypeEncapsulated()
     glDeleteProgram(_programId);
 }
 
-std::string FreeTypeEncapsulated::Init(const std::string &trueTypeFontFilePath,
-    const std::string &vertShaderPath, const std::string &fragShaderPath)
+bool FreeTypeEncapsulated::Init(const std::string &trueTypeFontFilePath, const unsigned int programId)
 {
-    // FreeType needs to load itself into particular variables
-    // Note: FT_Init_FreeType(...) returns something called an FT_Error, which VS can't find.
-    // Based on the useage, it is assumed that 0 is returned if something went wrong, otherwise
-    // non-zero is returned.  That is the only explanation for this kind of condition.
-    if (FT_Init_FreeType(&_ftLib))
+    if (programId == 0)
     {
-        fprintf(stderr, "Could not init freetype library\n");
+        fprintf(stderr, "FreeType was given a shader program ID of 0.  This is bad.\n");
         return false;
     }
-
-    // Note: FT_New_Face(...) also returns an FT_Error.
-    if (FT_New_Face(_ftLib, trueTypeFontFilePath.c_str(), 0, &_ftFace))
-    {
-        fprintf(stderr, "Could not open font '%s'\n", trueTypeFontFilePath.c_str());
-        return false;
-    }
-
-    ShaderStorage &shaderStorageRef = ShaderStorage::GetInstance();
-    std::string shaderKey = "freetype";
-    shaderStorageRef.NewShader(shaderKey);
-    shaderStorageRef.AddShaderFile(shaderKey, vertShaderPath, GL_VERTEX_SHADER);
-    shaderStorageRef.AddShaderFile(shaderKey, fragShaderPath, GL_FRAGMENT_SHADER);
-    shaderStorageRef.LinkShader(shaderKey);
-    _programId = shaderStorageRef.GetShaderProgram(shaderKey);
-    if (_programId == 0)
-    {
-        fprintf(stderr, "Freetype shader program is 0.  This is invalid.\n");
-        return false;
-    }
+    _programId = programId;
 
     // pick out the attributes and uniforms used in the FreeType GPU program
 
@@ -76,8 +52,26 @@ std::string FreeTypeEncapsulated::Init(const std::string &trueTypeFontFilePath,
         return false;
     }
 
+
+    // FreeType needs to load itself into particular variables
+    // Note: FT_Init_FreeType(...) returns something called an FT_Error, which VS can't find.
+    // Based on the useage, it is assumed that 0 is returned if something went wrong, otherwise
+    // non-zero is returned.  That is the only explanation for this kind of condition.
+    if (FT_Init_FreeType(&_ftLib))
+    {
+        fprintf(stderr, "Could not init freetype library\n");
+        return false;
+    }
+
+    // Note: FT_New_Face(...) also returns an FT_Error.
+    if (FT_New_Face(_ftLib, trueTypeFontFilePath.c_str(), 0, &_ftFace))
+    {
+        fprintf(stderr, "Could not open font '%s'\n", trueTypeFontFilePath.c_str());
+        return false;
+    }
+
     _haveInitialized = true;
-    return shaderKey;
+    return true;
 }
 
 //const std::shared_ptr<FreeTypeAtlas> FreeTypeEncapsulated::GenerateAtlas(const int fontSize)

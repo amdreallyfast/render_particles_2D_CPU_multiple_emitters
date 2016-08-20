@@ -107,24 +107,27 @@ void GenerateBox(GeometryData *putDataHere)
 
 /*-----------------------------------------------------------------------------------------------
 Description:
-    Creates a 32-point, 0.25 radius (in window coordinates) circle with texture coordinates that
-    will, on the 90-degree parts, hit the right center, top center, left center, and bottom 
-    center of whatever texture is used with it.
+    Creates a 32-point circle with texture coordinates that will, on the 90-degree parts, hit 
+    the right center, top center, left center, and bottom center of whatever texture is used with 
+    it.
 
     Note: I could have used sinf(...) and cosf(...) to create the points, but where's the fun in
     that if I have a faster and obtuse algorithm :) ?  Algorithm courtesy of 
     http://slabode.exofire.net/circle_draw.shtml .
 Parameters:
     putDataHere     Self-explanatory.
+    radius          Values in window coordinates (X and Y on range [-1,+1]).
+    wireframeOnly   If true, the circle prepares indices for GL_LINES.  If false, for 
+                    GL_TRIANGLES.
 Returns:    None
 Exception:  Safe
 Creator:    John Cox (6-12-2016)
 -----------------------------------------------------------------------------------------------*/
-void GenerateCircle(GeometryData *putDataHere)
+void GenerateCircle(GeometryData *putDataHere, float radius, bool wireframeOnly)
 {
     // a 32-point, 0.25 radius (window dimensions) circle will suffice for this demo
     unsigned int arcSegments = 32;
-    float x = 0.25f;
+    float x = radius;
     float y = 0.0f;
     float textureS = 0.5f;  // texture's "x"
     float textureT = 0.0f;  // texture's "y"
@@ -163,14 +166,39 @@ void GenerateCircle(GeometryData *putDataHere)
 
     // make triangles out of the first vertex from the first arc segment, and then the two 
     // vertices from each successive arc segment (draw it out on paper; it makes sense)
-    for (unsigned short segmentCount = 1; segmentCount < 32; segmentCount++)
+    for (unsigned short segmentCount = 0; segmentCount < arcSegments; segmentCount++)
     {
-        putDataHere->_indices.push_back(0);
+        // wireframe only, then drawing lines and only need to specify the segments' vertices, 
+        // but if not wireframe (that is, drawing a solid), then need to specify an origin for 
+        // the triangles
+        if (!wireframeOnly)
+        {
+            putDataHere->_indices.push_back(0);
+        }
+
+        // always put the starting vertex for this segment
         putDataHere->_indices.push_back(segmentCount);
-        putDataHere->_indices.push_back(segmentCount + 1);
+
+        // end vertex for the segment might need to circle back around
+        if (segmentCount == arcSegments - 1)
+        {
+            putDataHere->_indices.push_back(0);
+        }
+        else
+        {
+            putDataHere->_indices.push_back(segmentCount + 1);
+        }
     }
 
-    putDataHere->_drawStyle = GL_TRIANGLES;
+
+    if (wireframeOnly)
+    {
+        putDataHere->_drawStyle = GL_LINES;
+    }
+    else
+    {
+        putDataHere->_drawStyle = GL_TRIANGLES;
+    }
 }
 
 /*-----------------------------------------------------------------------------------------------

@@ -24,9 +24,8 @@ public:
     ~FreeTypeEncapsulated();
 
     // takes: file path relative to solution directory
-    // returns: the key 
-    std::string Init(const std::string &trueTypeFontFilePath,
-        const std::string &vertShaderPath, const std::string &fragShaderPath);
+    // returns: true if all went well, false if there was trouble
+    bool Init(const std::string &trueTypeFontFilePath, const unsigned int programId);
 
     // the shared pointer will encapsulate the atlas' pointer and clean up after it is 
     // unecessary, and it is const so that the user can't even try to re-initialize it
