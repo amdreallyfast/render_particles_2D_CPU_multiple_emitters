@@ -147,7 +147,6 @@
   <ItemGroup>
     <ClCompile Include="FreeTypeAtlas.cpp" />
     <ClCompile Include="FreeTypeEncapsulated.cpp" />
-    <ClCompile Include="GenerateShader.cpp" />
     <ClCompile Include="GeometryData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MinMaxVelocity.cpp" />
@@ -174,7 +173,6 @@
   <ItemGroup>
     <ClInclude Include="FreeTypeAtlas.h" />
     <ClInclude Include="FreeTypeEncapsulated.h" />
-    <ClInclude Include="GenerateShader.h" />
     <ClInclude Include="GeometryData.h" />
     <ClInclude Include="IParticleEmitter.h" />
     <ClInclude Include="IParticleRegion.h" />

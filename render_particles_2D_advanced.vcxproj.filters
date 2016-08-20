@@ -15,9 +15,6 @@
     <ClCompile Include="ParticleRegionPolygon.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="GenerateShader.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleRegionCircle.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
@@ -67,9 +64,6 @@
     </ClInclude>
     <ClInclude Include="ParticleUpdater.h">
       <Filter>Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="GenerateShader.h">
-      <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="ShaderStorage.h">
       <Filter>Shaders</Filter>
