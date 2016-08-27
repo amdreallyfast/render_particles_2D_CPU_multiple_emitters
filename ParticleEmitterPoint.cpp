@@ -15,7 +15,8 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 ParticleEmitterPoint::ParticleEmitterPoint(const glm::vec2 &emitterPos, const float minVel, const float maxVel)
 {
-    _position = emitterPos;
+    _originalPosition = emitterPos;
+    _currentPosition = emitterPos;
     _velocityCalculator.SetMinMaxVelocity(minVel, maxVel);
     _velocityCalculator.UseRandomDir();
 }
@@ -35,7 +36,13 @@ void ParticleEmitterPoint::ResetParticle(Particle *resetThis) const
     // give it some flavor by making the particles be reset to within a range near the emitter's 
     // position, making it look like a particle hotspot
     // TODO: the random thing
-    resetThis->_position = _position;
+    resetThis->_position = _currentPosition;
 
     resetThis->_velocity = _velocityCalculator.GetNew();
+}
+
+// TODO: header
+void ParticleEmitterPoint::SetTransform(const glm::mat4 &m)
+{
+    _currentPosition = glm::vec2(m * glm::vec4(_originalPosition, 0.0f, 1.0f));
 }

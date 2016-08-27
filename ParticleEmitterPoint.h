@@ -17,7 +17,9 @@ public:
     // emits randomly from the origin point
     ParticleEmitterPoint(const glm::vec2 &emitterPos, const float minVel, const float maxVel);
     virtual void ResetParticle(Particle *resetThis) const;
+    virtual void SetTransform(const glm::mat4 &m);
 private:
-    glm::vec2 _position;
+    glm::vec2 _originalPosition;
+    glm::vec2 _currentPosition;
     MinMaxVelocity _velocityCalculator;
 };

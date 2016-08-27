@@ -29,7 +29,7 @@ Returns:    None
 Exception:  Safe
 Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
-ParticleRegionPolygon::ParticleRegionPolygon(const std::vector<glm::vec2> corners)
+ParticleRegionPolygon::ParticleRegionPolygon(const std::vector<glm::vec2> &corners)
 {
 
     //_numCorners = corners.size();
@@ -56,7 +56,9 @@ ParticleRegionPolygon::ParticleRegionPolygon(const std::vector<glm::vec2> corner
         }
 
         // the center if halfway between these two points
-        _faceCenterPoints[cornerIndex] = (corner1 + corner2) * 0.5f;
+        glm::vec2 faceCenter = (corner1 + corner2) * 0.5f;
+        _originalFaceCenterPoints[cornerIndex] = faceCenter;
+        _currentFaceCenterPoints[cornerIndex] = faceCenter;
     }
 
     // the normals should point outwards
@@ -78,7 +80,9 @@ ParticleRegionPolygon::ParticleRegionPolygon(const std::vector<glm::vec2> corner
             corner2 = corners[cornerIndex + 1];
         }
 
-        _faceNormals[cornerIndex] = RotateNeg90(corner2 - corner1);
+        glm::vec2 faceNormal = RotateNeg90(corner2 - corner1);
+        _originalFaceNormals[cornerIndex] = faceNormal;
+        _currentFaceNormals[cornerIndex] = faceNormal;
     }
 }
 
@@ -94,15 +98,37 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 bool ParticleRegionPolygon::OutOfBounds(const Particle &p) const
 {
-    // "above" used in a relative sense
-    //bool aboveFace[MAX_POLYGON_FACES];
     bool outsidePolygon = false;
-    //Particle pCopy = p;
     for (size_t faceIndex = 0; faceIndex < _numFaces; faceIndex++)
     {
         // if any of these checks are true, then this flag will be true as well
-        outsidePolygon |= (glm::dot(p._position - _faceCenterPoints[faceIndex], _faceNormals[faceIndex]) > 0);
+        glm::vec2 v1 = p._position - _currentFaceCenterPoints[faceIndex];
+        glm::vec2 v2 = _currentFaceNormals[faceIndex];
+        outsidePolygon |= (glm::dot(v1, v2) > 0);
     }
 
     return outsidePolygon;
+}
+
+// TODO: header
+void ParticleRegionPolygon::SetTransform(const glm::mat4 &m)
+{
+    for (size_t faceIndex = 0; faceIndex < _numFaces; faceIndex++)
+    {
+        glm::vec2 endOfNormal = _currentFaceCenterPoints[faceIndex] + _currentFaceNormals[faceIndex];
+
+
+        // the extra 1.0f at the end means that it can be translated via 4x4 matrix
+        glm::vec4 faceCenterAsVec4 = 
+            glm::vec4(_originalFaceCenterPoints[faceIndex], 0.0f, 1.0f);
+        _currentFaceCenterPoints[faceIndex] = glm::vec2(m * faceCenterAsVec4);
+
+        // normals can be rotated but should never be translated because they are always relative to the face, so make the W value of the vec4 a 0, which will disable translation
+        glm::vec4 faceNormalAsVec4 =
+            glm::vec4(_originalFaceNormals[faceIndex], 0.0f, 0.0f);
+        _currentFaceNormals[faceIndex] = glm::vec2(m * faceNormalAsVec4); 
+
+
+        // do NOT transform the normals, which must always be relative to the surface
+    }
 }

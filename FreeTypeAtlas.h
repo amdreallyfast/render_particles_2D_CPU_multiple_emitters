@@ -23,10 +23,6 @@ public:
 
     bool Init(const FT_Face face, const int fontPixelHeightSize);
 
-    // TODO: check if different font sizes results in different bitmaps
-    //void CheckDifferentFontSize();
-    // TODO: does a large font size become pixelated? what about a large user scale? do they effectively do the same thing?
-
     void RenderText(const std::string &str, const float posScreenCoord[2],
         const float userScale[2], const float color[4]) const;
 private:
@@ -36,6 +32,7 @@ private:
     // It is a tad shady, but keep an eye on build warnings about incompatible types and you
     // should be fine.
     unsigned int _textureId;
+    int _textureUnit;
 
     // the atlas needs access to a vertex buffer
     // Note: Let the atlas make one.  The FreeType encapsulation could do this, but I am hesitant
@@ -49,7 +46,10 @@ private:
     // which sampler to use (0 - GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS (??you sure??)
     // Note: Technically it is a GLint, but is simple int here for the same reason 
     // "texture ID" is an unsigned int instead of GLuint.
-    int _textureSamplerId;
+    // Also Note: The sampler ID is an OpenGL-generated value and is therefore an unsigned int, 
+    // but the sampler number must be loaded into the shader as a signed int.  Yay.
+    unsigned int _textureSamplerId;
+    int _textureSamplerNum;
 
     // the FreeType glyph set provides the basic printable ASCII character set, and even though 
     // the first 31 are not visible and will therefore not be loaded, the useless bytes are an 

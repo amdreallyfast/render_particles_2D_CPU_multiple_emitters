@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "glm/mat4x4.hpp"
 
 /*-----------------------------------------------------------------------------------------------
 Description:
@@ -14,5 +15,6 @@ class IParticleRegion
 public:
     virtual ~IParticleRegion() {}
     virtual bool OutOfBounds(const Particle &p) const = 0;
+    virtual void SetTransform(const glm::mat4 &m) = 0;
 };
 

@@ -44,6 +44,12 @@ Exception:  Safe
 Creator:    John Cox (4-2016)
 -----------------------------------------------------------------------------------------------*/
 FreeTypeAtlas::FreeTypeAtlas(const int uniformTextSamplerLoc, const int uniformTextColorLoc) :
+    _textureId(0),
+    _textureUnit(0),
+    _vboId(0),
+    _vaoId(0),
+    _textureSamplerId(0),
+    _textureSamplerNum(0),
     _uniformTextSamplerLoc(uniformTextSamplerLoc),
     _uniformTextColorLoc(uniformTextColorLoc)
 {
@@ -93,6 +99,37 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
 
     // save some dereferencing
     FT_GlyphSlot glyph = face->glyph;
+
+    glGenTextures(1, &_textureId);
+
+    // these are some kind of standard texture settings for how to magnify it (detail when 
+    // zooming in), "minify" it (detail when zooming out), and set tiling.
+    // Note: I don't know how these work or what they do in detail, but they seem to be common
+    // in a few texture tutorials.
+    glGenSamplers(1, &_textureSamplerId);
+    glSamplerParameteri(_textureSamplerId, GL_TEXTURE_WRAP_S, GL_REPEAT);   // "S" is texture X axis
+    glSamplerParameteri(_textureSamplerId, GL_TEXTURE_WRAP_T, GL_REPEAT);   // "T" is texture Y axis
+    glSamplerParameteri(_textureSamplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);   // "zoom in"
+    glSamplerParameteri(_textureSamplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);   // "zoom out"
+
+    // tell the frag shader which texture sampler to use before loading the texture info
+    // Note: I tried to explain this to myself, but got lost.  Here's what I was thinking:
+    // - Setting an "active texture unit" sets it up to receive new info.
+    // - Binding a texture opens a channel between texture loading and texture unit memory.
+    // - Binding a sampler tells the "active texture unit" which sampler to use.
+    // - Tell the shader which sampler to use.
+    // - The sampler-texture unit link will persist even if the "active texture unit" changes.
+    // - The sampler number is a signed int, but the sampler ID is OpenGL-generated => unsigned.
+    // - If there were only one texture, then the default bindings for sampler 0 and texture 
+    // unit 0 would be ok and this could be skipped.  The code is kept here for instruction.
+    _textureUnit = 0;
+    _textureSamplerNum = 0;
+    glActiveTexture(GL_TEXTURE0 + _textureUnit);
+    glBindTexture(GL_TEXTURE_2D, _textureId);
+    glBindSampler(_textureSamplerNum, _textureSamplerId);
+    glUniform1i(_uniformTextSamplerLoc, _textureSamplerNum);
+
+
 
     // before I begin...
     // A texture atlas means that a bunch of different images are loaded into the same texture.  
@@ -208,9 +245,6 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     atlasPixelWidth = std::max(atlasPixelWidth, rowPixelWidth);
     atlasPixelHeight += rowPixelHeight;
 
-    // must have already created AND BOUND a program for this to work
-    glGenTextures(1, &_textureId);
-    glBindTexture(GL_TEXTURE_2D, _textureId);
 
     // allocate space for the texture in GPU memory
     // Note: This is why "atlas width" and "atlas height" had to be computed beforehand.
@@ -259,25 +293,9 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     glTexImage2D(GL_TEXTURE_2D, level, internalFormat, atlasPixelWidth, atlasPixelHeight,
         border, providedFormat, providedFormatDataType, 0);
 
-    // tell the frag shader which texture sampler to use before loading the texture info
-    // ??necessary??
-    glActiveTexture(GL_TEXTURE0);
-    _textureSamplerId = 0;
-    glUniform1i(_uniformTextSamplerLoc, _textureSamplerId);
 
     // ??the heck is this??
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // texture configuration setup (I don't understand most of these)
-    // - clamp both S and T (texture's X and Y; they have their own axis names) to edges so that 
-    // any texture coordinates that are provided to OpenGL won't be allowed beyond the [-1, +1] 
-    // range that texture coordinates are restricted to
-    // - linear filtering when the texture needs to be magnified or (I cringe at the term) 
-    // "minified" based on scaling
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     // paste all glyph bitmaps into the texture, but when loading them, I need to keep track of 
     // where they are
@@ -344,7 +362,9 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
 
         // rectangles (including OpenGL textures) are defined by an origin (already recorded) 
         // and width and height
-        // Note: The portion of the atlas texture for this character needs an origin and width and height, and since the origin is in texture coordinates, the width and height for this portion of the texture must also be in texture coordinates.
+        // Note: The portion of the atlas texture for this character needs an origin and width 
+        // and height, and since the origin is in texture coordinates, the width and height for 
+        // this portion of the texture must also be in texture coordinates.
         _glyphCharInfo[charCode].bw = (float)(glyph->bitmap.width);
         _glyphCharInfo[charCode].nbw = (float)(glyph->bitmap.width / (float)atlasPixelWidth);
         _glyphCharInfo[charCode].bh = (float)(glyph->bitmap.rows);
@@ -355,7 +375,8 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
         offsetX += glyph->bitmap.width + 1;
     }
 
-    // create the vertex buffer object (VBO) that will be used to create quads as a base for the FreeType glyph textures and store the vertex attribtues in a vertex array object (VAO)
+    // create the vertex buffer object (VBO) that will be used to create quads as a base for the 
+    // FreeType glyph textures and store the vertex attribtues in a vertex array object (VAO)
     // Note: MUST bind BEFORE setting vertex attribute array pointers or it WILL crash.  The GPU 
     // operates on the values set in the vertex attribute pointers and not on the buffer ID.  
     // The buffer ID is simply a way to tell OpenGL to activate a certain part of the context, 
@@ -368,7 +389,8 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     glGenVertexArrays(1, &_vaoId);
     glGenBuffers(1, &_vboId);
 
-    // bind the vertex array object(VAO) before binding the buffer object so that the vertex attributes are associated with that buffer.
+    // bind the vertex array object(VAO) before binding the buffer object so that the vertex 
+    // attributes are associated with that buffer.
     glBindVertexArray(_vaoId);
     glBindBuffer(GL_ARRAY_BUFFER, _vboId);
 
@@ -399,10 +421,12 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
     glVertexAttribPointer(vai, itemsPerVertexAttrib, GL_FLOAT, GL_FALSE, bytesPerVertex,
         (void *)bufferStartByteOffset);
 
-    // unbind in reverse order or else the buffer unbinding will un-associate it with the vertex attributes 
+    // cleanup
+    // Note: Unbinding order matters for VAO and VBO or else the buffer unbinding will 
+    // un-associate it with the vertex attributes.
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // no problems initializing atlas (I hope)
     return true;
@@ -438,8 +462,10 @@ void FreeTypeAtlas::RenderText(const std::string &str, const float posScreenCoor
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // bind the texture that contains the atlas and tell OpenGL 
+    glActiveTexture(GL_TEXTURE0 + _textureUnit);
     glBindTexture(GL_TEXTURE_2D, _textureId);
-    glUniform1i(_uniformTextSamplerLoc, _textureSamplerId);
+    glBindSampler(_textureSamplerNum, _textureSamplerId);
+    glUniform1i(_uniformTextSamplerLoc, _textureSamplerNum);
 
     // use the user-provided color
     glUniform4fv(_uniformTextColorLoc, 1, color);

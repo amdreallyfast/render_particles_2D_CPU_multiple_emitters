@@ -14,10 +14,11 @@ class ParticleRegionCircle : public IParticleRegion
 {
 public:
     ParticleRegionCircle(const glm::vec2 &center, const float radius);
-
     virtual bool OutOfBounds(const Particle &p) const;
+    virtual void SetTransform(const glm::mat4 &m);
 
 private:
-    glm::vec2 _center;
+    glm::vec2 _originalCenter;
+    glm::vec2 _currentCenter;   // for speed during calls to OutOfBounds(...)
     float _radiusSqr;   // because radius is never used
 };

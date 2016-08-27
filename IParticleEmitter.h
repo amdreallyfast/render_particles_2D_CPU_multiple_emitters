@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "glm/mat4x4.hpp"
 
 /*-----------------------------------------------------------------------------------------------
 Description:
@@ -13,5 +14,6 @@ class IParticleEmitter
 public:
     virtual ~IParticleEmitter() {}
     virtual void ResetParticle(Particle *resetThis) const = 0;
+    virtual void SetTransform(const glm::mat4 &m) = 0;
 };
 

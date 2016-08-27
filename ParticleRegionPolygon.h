@@ -18,8 +18,9 @@ Creator:    John Cox (7-2-2016)
 class ParticleRegionPolygon : public IParticleRegion
 {
 public:
-    ParticleRegionPolygon(const std::vector<glm::vec2> corners);
+    ParticleRegionPolygon(const std::vector<glm::vec2> &corners);
     virtual bool OutOfBounds(const Particle &p) const;
+    virtual void SetTransform(const glm::mat4 &m);
 
 private:
     unsigned int _numFaces;
@@ -30,29 +31,8 @@ private:
     // just to find the corners' vectors created a major frame rate drop.
     // Solution: Use arrays with a max size.  This keeps up the flexibility of variable number of
     // sides while keeping all necessary info in the process' data memory.
-    glm::vec2 _faceCenterPoints[MAX_POLYGON_FACES];
-    glm::vec2 _faceNormals[MAX_POLYGON_FACES];
-
-    //// used to unroll a loop in the "out of bounds" check, which became necessary when the frame
-    //// rate dropped like a rock when going from 1000->10000 particles (the circle particle 
-    //// region was fine and trucks along at a high frame rate)
-    //unsigned int _numCorners;
-
-    //glm::vec2 _cp1;
-    //glm::vec2 _cp2;
-    //glm::vec2 _cp3;
-    //glm::vec2 _cp4;
-    //glm::vec2 _n1;
-    //glm::vec2 _n2;
-    //glm::vec2 _n3;
-    //glm::vec2 _n4;
-
-    //std::vector<glm::vec2> _faceNormals;
-
-    //// these centers are used as reference points to make a vector out of the particle's current 
-    //// position that stems from the same base as the face normal
-    //// Note: I actually could have used any point along the face, but the center point is 
-    //// conceptually easy to imagine as the "source" of the surface normal since that is where it 
-    //// is usually drawn in diagrams.
-    //std::vector<glm::vec2> _faceCenterPoints;
+    glm::vec2 _originalFaceCenterPoints[MAX_POLYGON_FACES];
+    glm::vec2 _originalFaceNormals[MAX_POLYGON_FACES];
+    glm::vec2 _currentFaceCenterPoints[MAX_POLYGON_FACES];
+    glm::vec2 _currentFaceNormals[MAX_POLYGON_FACES];
 };

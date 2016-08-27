@@ -14,7 +14,10 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 ParticleRegionCircle::ParticleRegionCircle(const glm::vec2 &center, const float radius)
 {
-    _center = center;
+    // start these two equal, but if a transform is added, then they will diverge
+    _originalCenter = center;
+    _currentCenter = _originalCenter;
+
     _radiusSqr = radius * radius;
 }
 
@@ -30,7 +33,7 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 bool ParticleRegionCircle::OutOfBounds(const Particle &p) const
 {
-    glm::vec2 centerToParticle = p._position - _center;
+    glm::vec2 centerToParticle = p._position - _currentCenter;
     float distSqr = glm::dot(centerToParticle, centerToParticle);
     if (distSqr > _radiusSqr)
     {
@@ -40,4 +43,10 @@ bool ParticleRegionCircle::OutOfBounds(const Particle &p) const
     {
         return false;
     }
+}
+
+// TODO: header
+void ParticleRegionCircle::SetTransform(const glm::mat4 &m)
+{
+    _currentCenter = glm::vec2(m * glm::vec4(_originalCenter, 0.0f, 1.0f));
 }
