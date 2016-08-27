@@ -45,7 +45,15 @@ bool ParticleRegionCircle::OutOfBounds(const Particle &p) const
     }
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Applies the transform to the circle's center point.
+Parameters:
+    m       A 4x4 transform matrix.  Because glm transform functions only spit out a 4x4.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (8-26-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleRegionCircle::SetTransform(const glm::mat4 &m)
 {
     _currentCenter = glm::vec2(m * glm::vec4(_originalCenter, 0.0f, 1.0f));

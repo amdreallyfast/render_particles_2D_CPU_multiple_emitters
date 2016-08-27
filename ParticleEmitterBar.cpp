@@ -46,19 +46,23 @@ Creator:    John Cox (7-2-2016)
 -----------------------------------------------------------------------------------------------*/
 void ParticleEmitterBar::ResetParticle(Particle *resetThis) const
 {
-    //??when to turn it on??
-    //resetThis->_isActive = true;
-
     // give it some flavor by making the particles be reset to within a range near the emitter 
     // bar's position instead of exactly on the bar, making it look like a particle hotspot
-    // TODO: the random thing
     resetThis->_position = _currentBarStart + (RandomOnRange0to1() * _currentBarStartToEnd);
-
 
     resetThis->_velocity = _velocityCalculator.GetNew();
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Applies the transform to the emission direction and to the points that make up the bar.  The 
+    emission direction is only rotated, while the bar points are rotated and translated.
+Parameters:
+    m       A 4x4 transform matrix.  Because glm transform functions only spit out a 4x4.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (8-26-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleEmitterBar::SetTransform(const glm::mat4 &m)
 {
     _currentBarStart = glm::vec2(m * glm::vec4(_originalBarStart, 0.0f, 1.0f));

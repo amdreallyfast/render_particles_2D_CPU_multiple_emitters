@@ -110,7 +110,16 @@ bool ParticleRegionPolygon::OutOfBounds(const Particle &p) const
     return outsidePolygon;
 }
 
-// TODO: header
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Applies the transform to each face center point and face normal.  Center points are rotated 
+    and translated, while normals are only rotated.
+Parameters:
+    m       A 4x4 transform matrix.  Because glm transform functions only spit out a 4x4.
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (8-26-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleRegionPolygon::SetTransform(const glm::mat4 &m)
 {
     for (size_t faceIndex = 0; faceIndex < _numFaces; faceIndex++)
