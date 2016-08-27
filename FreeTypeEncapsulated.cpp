@@ -143,7 +143,7 @@ const std::shared_ptr<FreeTypeAtlas> FreeTypeEncapsulated::GetAtlas(const int fo
         }
 
         // if something went wrong with atlas initialization, so let it die
-        fprintf(stderr, "FreeTypeAtlas could not be initialized with font size '%'\n", fontSize);
+        fprintf(stderr, "FreeTypeAtlas could not be initialized with font size '%d'\n", fontSize);
         return 0;
     }
 }

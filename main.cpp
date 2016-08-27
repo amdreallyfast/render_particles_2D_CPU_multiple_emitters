@@ -86,7 +86,10 @@ IParticleEmitter *gpParticleEmitterBar;
 ParticleUpdater gParticleUpdater;
 
 // divide between the circle and the polygon regions
-const unsigned int MAX_PARTICLE_COUNT = 10000;
+// Note: 
+// - 10,000 particles => ~60 fps on my computer
+// - 15,000 particles => 30-40 fps on my computer
+const unsigned int MAX_PARTICLE_COUNT = 15000;
 ParticleStorage gParticleStorage;
 
 

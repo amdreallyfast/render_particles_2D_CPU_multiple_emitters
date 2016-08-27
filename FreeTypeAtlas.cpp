@@ -325,11 +325,6 @@ bool FreeTypeAtlas::Init(const FT_Face face, const int fontPixelHeightSize)
         }
 
         // send the glyph's bitmap to its own place in the atlas' texture
-        GLint level = 0;
-        GLint internalFormat = GL_RED;
-        GLint providedFormat = GL_RED;
-        GLenum providedFormatDataType = GL_UNSIGNED_BYTE;
-        GLint border = 0;
         glTexSubImage2D(GL_TEXTURE_2D, level, offsetX, offsetY, glyph->bitmap.width,
             glyph->bitmap.rows, providedFormat, providedFormatDataType, glyph->bitmap.buffer);
 
