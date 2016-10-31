@@ -69,16 +69,17 @@ Parameters:
                         emitters.
     numToUpdate         Same idea as "start index".
     deltatimeSec        Self-explanatory
-Returns:    None
+Returns:    
+    The number of active particles.  Useful for performance comparison with GPU version.
 Exception:  Safe
 Creator:    John Cox (7-4-2016)
 -----------------------------------------------------------------------------------------------*/
-void ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
+unsigned int ParticleUpdater::Update(std::vector<Particle> &particleCollection, 
     const unsigned int startIndex, const unsigned int numToUpdate, const float deltaTimeSec) const
 {
     if (_emitterCount == 0 || _pRegion == 0)
     {
-        return;
+        return 0;
     }
 
     // for all particles:
@@ -92,19 +93,19 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
 
     // simply called "end" because I want to keep using the "< end" notation on the loop end 
     // condition
-    unsigned int end = startIndex + numToUpdate;
-    if (end > particleCollection.size())
+    unsigned int endIndex = startIndex + numToUpdate;
+    if (endIndex > particleCollection.size())
     {
         // if "end" was already == particle collection size, then all is good
-        end = particleCollection.size();
+        endIndex = particleCollection.size();
     }
 
     // when using multiple emitters, it looks best to cycle between all emitters one by one, but that is also more difficult to deal with and requires a number of different checks and conditions, and provided the total number of particles to update exceeds the total number of max particles emitted per frame across all emitters, then it will look just as good to "fill up" each emitter one by one, and that is much easier to implement
     unsigned int particleEmitCounter = 0;
     int emitterIndex = 0;
+    unsigned int numActiveParticles = 0;
 
-    //for (size_t particleIndex = 0; particleIndex < particleCollection.size(); particleIndex++)
-    for (size_t particleIndex = startIndex; particleIndex < end; particleIndex++)
+    for (size_t particleIndex = startIndex; particleIndex < endIndex; particleIndex++)
     {
         Particle &pCopy = particleCollection[particleIndex];
         if (_pRegion->OutOfBounds(pCopy))
@@ -114,6 +115,7 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
 
         if (pCopy._isActive)
         {
+            numActiveParticles++;
             pCopy._position = pCopy._position + (pCopy._velocity * deltaTimeSec);
         }
         else if (emitterIndex < MAX_EMITTERS)   // also implicitly, "is active" is false
@@ -143,8 +145,21 @@ void ParticleUpdater::Update(std::vector<Particle> &particleCollection,
             }
         }
     }
+
+    return numActiveParticles;
 }
 
+/*-----------------------------------------------------------------------------------------------
+Description:
+    Used during initialization to give all particles initial values.  It would not do to have 
+    everyone with random values composed of whatever bits were already in the memory where they 
+    ended up.
+Parameters:
+    particleCollection  Self-explanatory
+Returns:    None
+Exception:  Safe
+Creator:    John Cox (8-13-2016)
+-----------------------------------------------------------------------------------------------*/
 void ParticleUpdater::ResetAllParticles(std::vector<Particle> &particleCollection)
 {
     // reset all particles evenly 
@@ -158,6 +173,5 @@ void ParticleUpdater::ResetAllParticles(std::vector<Particle> &particleCollectio
             _pEmitters[emitterIndex]->ResetParticle(&particleCollection[particleIndex]);
         }
     }
-
 }
 

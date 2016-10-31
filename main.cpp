@@ -220,7 +220,7 @@ void Display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // update all particle locations
-    gParticleUpdater.Update(gParticleStorage._allParticles, 0, 
+    unsigned int numActiveParticles = gParticleUpdater.Update(gParticleStorage._allParticles, 0, 
         gParticleStorage._allParticles.size(), 0.01f);
 
     // draw the particles
@@ -242,7 +242,7 @@ void Display()
     // Note: The font textures' orgin is their lower left corner, so the "lower left" in screen 
     // space is just above [-1.0f, -1.0f].
     GLfloat color[4] = { 0.5f, 0.5f, 0.0f, 1.0f };
-    char str[8];
+    char str[32];
     static int elapsedFramesPerSecond = 0;
     static double elapsedTime = 0.0;
     static double frameRate = 0.0;
@@ -261,6 +261,12 @@ void Display()
     // the first time that "get shader program" runs, it will load the atlas
     glUseProgram(ShaderStorage::GetInstance().GetShaderProgram("freetype"));
     gTextAtlases.GetAtlas(48)->RenderText(str, xy, scaleXY, color);
+
+    // now show number of active particles
+    // Note: For some reason, lower case "i" seems to appear too close to the other letters.
+    sprintf(str, "active: %d", numActiveParticles);
+    float numActiveParticlesXY[2] = { -0.99f, +0.7f };
+    gTextAtlases.GetAtlas(48)->RenderText(str, numActiveParticlesXY, scaleXY, color);
 
     // clean up bindings
     glUseProgram(0);

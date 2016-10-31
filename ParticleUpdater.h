@@ -23,7 +23,7 @@ public:
     void AddEmitter(const IParticleEmitter *pEmitter, const int maxParticlesEmittedPerFrame);
     // no "remove emitter" method because this is just a demo
 
-    void Update(std::vector<Particle> &particleCollection, const unsigned int startIndex, 
+    unsigned int Update(std::vector<Particle> &particleCollection, const unsigned int startIndex, 
         const unsigned int numToUpdate, const float deltaTimeSec) const;
     void ResetAllParticles(std::vector<Particle> &particleCollection);
 
